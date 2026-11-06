@@ -4017,7 +4017,18 @@ html[data-theme="dark"] .language-toggle button[aria-pressed="true"] {
   color: #1b1200;
 }
 
-@media (min-width: 1000px) and (max-width: 1520px) {
+@media (min-width: 1700px) {
+  .unified-site-header__inner {
+    width: min(1560px, calc(100% - 44px));
+  }
+
+  .unified-site-header__identity .company-identity__text {
+    min-width: 240px;
+    max-width: 330px;
+  }
+}
+
+@media (min-width: 1000px) and (max-width: 1699px) {
   .unified-site-header__identity .company-identity__text {
     display: none;
   }
