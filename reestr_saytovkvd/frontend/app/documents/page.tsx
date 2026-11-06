@@ -316,9 +316,9 @@ export default function DocumentsPage() {
                 transition={{ duration: 0.32, delay: Math.min(index * 0.04, 0.2) }}
                 whileHover={{ y: -3 }}
               >
-                <Card sx={{ borderRadius: 3 }}>
+                <Card className="documents-card" sx={{ borderRadius: 3 }}>
                 <CardContent sx={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
-                  <DescriptionOutlined color="primary" />
+                  <span className="documents-card__icon"><DescriptionOutlined /></span>
                   <Box sx={{ minWidth: 0, flex: 1 }}>
                     <Typography variant="h6" sx={{ fontWeight: 750 }}>{item.title}</Typography>
                     <Typography variant="body2" color="primary.main" sx={{ mt: 0.5 }}>
