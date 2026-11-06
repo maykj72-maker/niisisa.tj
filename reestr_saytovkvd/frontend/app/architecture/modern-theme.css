@@ -1995,3 +1995,102 @@
     animation: none;
   }
 }
+
+/* ---- Photo mosaic (replaces the auto-advancing carousel) ---- */
+.portal-photo-grid--mosaic:not(.portal-leader-photo-grid) {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: 190px;
+  grid-auto-flow: dense;
+  gap: 14px;
+}
+
+.portal-photo-grid--mosaic .portal-photo-card {
+  position: relative;
+  display: block;
+  border: 0;
+  border-radius: 16px;
+  background: #0f2a26;
+  box-shadow: 0 14px 34px rgb(15 42 38 / 14%);
+  transition: transform 260ms ease, box-shadow 260ms ease;
+}
+
+.portal-photo-grid--mosaic .portal-photo-card:first-child:not(:last-child) {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.portal-photo-grid--mosaic .portal-photo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 50px rgb(15 42 38 / 24%);
+}
+
+.portal-photo-grid--mosaic .portal-photo-card__image,
+.portal-photo-grid--mosaic .portal-photo-card--wide .portal-photo-card__image,
+.portal-photo-grid--mosaic .portal-photo-card--document .portal-photo-card__image,
+.portal-photo-grid--mosaic .portal-photo-card--portrait .portal-photo-card__image {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  aspect-ratio: auto;
+  padding: 0;
+  background: #0f2a26;
+}
+
+.portal-photo-grid--mosaic .portal-photo-card__image img,
+.portal-photo-grid--mosaic .portal-photo-card--document .portal-photo-card__image img,
+.portal-photo-grid--mosaic .portal-photo-card--wide .portal-photo-card__image img {
+  object-fit: cover;
+}
+
+.portal-photo-grid--mosaic .portal-photo-card__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.portal-photo-grid--mosaic .portal-photo-card figcaption {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 2;
+  padding: 36px 16px 14px;
+  color: #fff;
+  background: linear-gradient(180deg, rgb(8 24 22 / 0%) 0%, rgb(8 24 22 / 82%) 100%);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
+  pointer-events: none;
+}
+
+.portal-photo-grid--mosaic .portal-photo-card__description {
+  display: none;
+}
+
+@media (max-width: 1020px) {
+  .portal-photo-grid--mosaic:not(.portal-leader-photo-grid) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 170px;
+  }
+
+}
+
+@media (max-width: 560px) {
+  .portal-photo-grid--mosaic:not(.portal-leader-photo-grid) {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 220px;
+  }
+
+  .portal-photo-grid--mosaic .portal-photo-card:first-child:not(:last-child) {
+    grid-column: auto;
+    grid-row: span 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-photo-grid--mosaic .portal-photo-card,
+  .portal-photo-grid--mosaic .portal-photo-card:hover {
+    transition: none;
+    transform: none;
+  }
+}
