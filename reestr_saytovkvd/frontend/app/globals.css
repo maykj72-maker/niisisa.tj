@@ -3578,3 +3578,46 @@ html {
     transform: none !important;
   }
 }
+
+/* Bell and theme toggle on light (dashboard / utility) headers */
+.registry-dashboard-main > .unified-site-header,
+.utility-page__main > .unified-site-header {
+  z-index: 40;
+}
+
+.registry-dashboard-main .notification-bell__button,
+.registry-dashboard-main .theme-toggle,
+.utility-page__main .notification-bell__button,
+.utility-page__main .theme-toggle {
+  border-color: #d6e0ea;
+  color: #1d4f6e;
+  background: #f3f7fa;
+}
+
+.registry-dashboard-main .notification-bell__button:hover,
+.registry-dashboard-main .theme-toggle:hover,
+.utility-page__main .notification-bell__button:hover,
+.utility-page__main .theme-toggle:hover {
+  border-color: #1d7665;
+  color: #1d7665;
+  background: #e8f4f0;
+}
+
+.registry-dashboard-main .notification-bell__badge,
+.utility-page__main .notification-bell__badge {
+  box-shadow: 0 0 0 2px #fff;
+}
+
+html[data-theme="dark"] .registry-dashboard-main .notification-bell__button,
+html[data-theme="dark"] .registry-dashboard-main .theme-toggle,
+html[data-theme="dark"] .utility-page__main .notification-bell__button,
+html[data-theme="dark"] .utility-page__main .theme-toggle {
+  border-color: #2c4260;
+  color: #dbe7f5;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+html[data-theme="dark"] .registry-dashboard-main .notification-bell__badge,
+html[data-theme="dark"] .utility-page__main .notification-bell__badge {
+  box-shadow: 0 0 0 2px #0d1b2e;
+}
