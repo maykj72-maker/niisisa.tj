@@ -739,6 +739,32 @@ def ensure_db() -> None:
                 "VALUES (?, ?, ?, ?, 1, ?, ?)",
                 (uuid.uuid4().hex, _i, _title, _head, _ts, _ts),
             )
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS cms_items (
+            id TEXT PRIMARY KEY,
+            collection TEXT NOT NULL,
+            position INTEGER NOT NULL DEFAULT 0,
+            active INTEGER NOT NULL DEFAULT 1,
+            data TEXT NOT NULL DEFAULT '{}',
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+        """
+    )
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_cms_items_collection ON cms_items (collection, position)")
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS feedback_messages (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            contact TEXT NOT NULL,
+            message TEXT NOT NULL,
+            is_read INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL
+        )
+        """
+    )
     news_columns = conn.execute("PRAGMA table_info(news)").fetchall()
     existing_news_columns = {column[1] for column in news_columns}
     for column, declaration in {
@@ -1966,12 +1992,12 @@ def verify_certificate(certificate_id: str, number: str):
 
 
 @app.get("/api/audit")
-def get_audit(authorization: str | None = Header(default=None)):
+def get_audit(limit: int = Query(default=20, ge=1, le=300), authorization: str | None = Header(default=None)):
     user = get_user_from_token(authorization)
     if user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Журнал аудита доступен только администратору")
     conn = get_db()
-    rows = conn.execute("SELECT * FROM audit_log ORDER BY created_at DESC LIMIT 20").fetchall()
+    rows = conn.execute("SELECT * FROM audit_log ORDER BY created_at DESC LIMIT ?", (limit,)).fetchall()
     conn.close()
     return [dict(row) for row in rows]
 
@@ -2221,6 +2247,240 @@ def delete_activity(activity_id: str, authorization: str | None = Header(default
     conn.commit()
     conn.close()
     append_audit(f"Удалено направление деятельности: {row['title']}")
+    return {"status": "deleted"}
+
+
+CMS_COLLECTIONS: dict[str, dict[str, Any]] = {
+    "slides": {"title": "Слайды", "fields": [
+        {"key": "title", "label": "Заголовок", "type": "text", "required": True},
+        {"key": "subtitle", "label": "Подзаголовок", "type": "textarea"},
+        {"key": "image", "label": "Изображение", "type": "image"},
+        {"key": "link", "label": "Ссылка", "type": "text"},
+    ]},
+    "home-blocks": {"title": "Блоки главной", "fields": [
+        {"key": "title", "label": "Заголовок", "type": "text", "required": True},
+        {"key": "text", "label": "Текст", "type": "textarea"},
+        {"key": "image", "label": "Изображение", "type": "image"},
+        {"key": "link", "label": "Ссылка", "type": "text"},
+    ]},
+    "advantages": {"title": "Преимущества", "fields": [
+        {"key": "title", "label": "Заголовок", "type": "text", "required": True},
+        {"key": "text", "label": "Описание", "type": "textarea"},
+    ]},
+    "products": {"title": "Наши продукты", "fields": [
+        {"key": "title", "label": "Название", "type": "text", "required": True},
+        {"key": "text", "label": "Описание", "type": "textarea"},
+        {"key": "image", "label": "Изображение", "type": "image"},
+    ]},
+    "goods": {"title": "Товары", "fields": [
+        {"key": "title", "label": "Название", "type": "text", "required": True},
+        {"key": "text", "label": "Описание", "type": "textarea"},
+        {"key": "price", "label": "Цена", "type": "text"},
+        {"key": "category", "label": "Категория", "type": "text"},
+        {"key": "image", "label": "Изображение", "type": "image"},
+    ]},
+    "goods-categories": {"title": "Категории товаров", "fields": [
+        {"key": "title", "label": "Название", "type": "text", "required": True},
+    ]},
+    "projects": {"title": "Проекты", "fields": [
+        {"key": "title", "label": "Название", "type": "text", "required": True},
+        {"key": "text", "label": "Описание", "type": "textarea"},
+        {"key": "category", "label": "Категория", "type": "text"},
+        {"key": "year", "label": "Год", "type": "text"},
+        {"key": "image", "label": "Изображение", "type": "image"},
+    ]},
+    "project-categories": {"title": "Категории проектов", "fields": [
+        {"key": "title", "label": "Название", "type": "text", "required": True},
+    ]},
+    "pages": {"title": "Страницы", "fields": [
+        {"key": "title", "label": "Заголовок", "type": "text", "required": True},
+        {"key": "slug", "label": "Адрес (латиницей)", "type": "text", "required": True},
+        {"key": "content", "label": "Содержимое", "type": "textarea"},
+    ]},
+    "about": {"title": "О предприятии", "fields": [
+        {"key": "title", "label": "Заголовок", "type": "text", "required": True},
+        {"key": "text", "label": "Текст", "type": "textarea"},
+        {"key": "image", "label": "Изображение", "type": "image"},
+    ]},
+    "settings": {"title": "Настройки", "fields": [
+        {"key": "title", "label": "Название параметра", "type": "text", "required": True},
+        {"key": "value", "label": "Значение", "type": "textarea"},
+    ]},
+}
+
+
+class CmsItemPayload(BaseModel):
+    data: dict[str, Any]
+    position: int = Field(default=0, ge=0, le=9999)
+    active: bool = True
+
+
+def _cms_collection(name: str) -> dict[str, Any]:
+    collection = CMS_COLLECTIONS.get(name)
+    if collection is None:
+        raise HTTPException(status_code=404, detail="Раздел не найден")
+    return collection
+
+
+def _clean_cms_data(collection: dict[str, Any], data: dict[str, Any]) -> dict[str, str]:
+    cleaned: dict[str, str] = {}
+    for field in collection["fields"]:
+        value = data.get(field["key"], "")
+        if not isinstance(value, str):
+            raise HTTPException(status_code=422, detail=f"Поле «{field['label']}» должно быть текстом")
+        value = value.strip()
+        limit = 20000 if field["type"] == "textarea" else 500
+        if len(value) > limit:
+            raise HTTPException(status_code=422, detail=f"Поле «{field['label']}» слишком длинное")
+        if field["type"] == "image" and value and not (
+            value.startswith("/media/") or value.startswith("https://") or value.startswith("http://")
+        ):
+            raise HTTPException(status_code=422, detail=f"Поле «{field['label']}» должно быть ссылкой на изображение")
+        if field.get("required") and not value:
+            raise HTTPException(status_code=422, detail=f"Заполните поле «{field['label']}»")
+        cleaned[field["key"]] = value
+    return cleaned
+
+
+def _cms_row(row) -> dict[str, Any]:
+    return {
+        "id": row["id"],
+        "position": row["position"],
+        "active": bool(row["active"]),
+        "data": json.loads(row["data"]),
+    }
+
+
+@app.get("/api/cms/schema")
+def cms_schema(authorization: str | None = Header(default=None)):
+    require_admin(authorization)
+    return {name: {"title": item["title"], "fields": item["fields"]} for name, item in CMS_COLLECTIONS.items()}
+
+
+@app.get("/api/cms/{collection}")
+def list_cms_items(collection: str, authorization: str | None = Header(default=None)):
+    _cms_collection(collection)
+    include_hidden = False
+    if authorization:
+        try:
+            include_hidden = get_user_from_token(authorization)["role"] == "admin"
+        except HTTPException:
+            include_hidden = False
+    if collection == "settings" and not include_hidden:
+        raise HTTPException(status_code=403, detail="Настройки доступны только администратору")
+    conn = get_db()
+    query = "SELECT * FROM cms_items WHERE collection = ?"
+    if not include_hidden:
+        query += " AND active = 1"
+    rows = conn.execute(query + " ORDER BY position, created_at", (collection,)).fetchall()
+    conn.close()
+    return [_cms_row(row) for row in rows]
+
+
+@app.post("/api/cms/{collection}")
+def create_cms_item(collection: str, payload: CmsItemPayload, authorization: str | None = Header(default=None)):
+    require_admin(authorization)
+    definition = _cms_collection(collection)
+    data = _clean_cms_data(definition, payload.data)
+    conn = get_db()
+    position = payload.position or (
+        conn.execute("SELECT COALESCE(MAX(position), 0) FROM cms_items WHERE collection = ?", (collection,)).fetchone()[0] + 1
+    )
+    timestamp = now_iso()
+    item_id = uuid.uuid4().hex
+    conn.execute(
+        "INSERT INTO cms_items (id, collection, position, active, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (item_id, collection, position, int(payload.active), json.dumps(data, ensure_ascii=False), timestamp, timestamp),
+    )
+    conn.commit()
+    row = conn.execute("SELECT * FROM cms_items WHERE id = ?", (item_id,)).fetchone()
+    conn.close()
+    append_audit(f"{definition['title']}: добавлена запись «{data.get('title', '')}»")
+    return _cms_row(row)
+
+
+@app.put("/api/cms/{collection}/{item_id}")
+def update_cms_item(collection: str, item_id: str, payload: CmsItemPayload, authorization: str | None = Header(default=None)):
+    require_admin(authorization)
+    definition = _cms_collection(collection)
+    data = _clean_cms_data(definition, payload.data)
+    conn = get_db()
+    cursor = conn.execute(
+        "UPDATE cms_items SET data = ?, position = ?, active = ?, updated_at = ? WHERE id = ? AND collection = ?",
+        (json.dumps(data, ensure_ascii=False), payload.position, int(payload.active), now_iso(), item_id, collection),
+    )
+    conn.commit()
+    if cursor.rowcount == 0:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Запись не найдена")
+    row = conn.execute("SELECT * FROM cms_items WHERE id = ?", (item_id,)).fetchone()
+    conn.close()
+    append_audit(f"{definition['title']}: изменена запись «{data.get('title', '')}»")
+    return _cms_row(row)
+
+
+@app.delete("/api/cms/{collection}/{item_id}")
+def delete_cms_item(collection: str, item_id: str, authorization: str | None = Header(default=None)):
+    require_admin(authorization)
+    definition = _cms_collection(collection)
+    conn = get_db()
+    cursor = conn.execute("DELETE FROM cms_items WHERE id = ? AND collection = ?", (item_id, collection))
+    conn.commit()
+    conn.close()
+    if cursor.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Запись не найдена")
+    append_audit(f"{definition['title']}: удалена запись")
+    return {"status": "deleted"}
+
+
+class FeedbackPayload(BaseModel):
+    name: str = Field(..., min_length=2, max_length=120)
+    contact: str = Field(..., min_length=3, max_length=160)
+    message: str = Field(..., min_length=5, max_length=3000)
+
+
+@app.post("/api/messages")
+def create_message(payload: FeedbackPayload, request: Request):
+    enforce_rate_limit(request, "feedback", 5, 3600)
+    conn = get_db()
+    conn.execute(
+        "INSERT INTO feedback_messages (id, name, contact, message, is_read, created_at) VALUES (?, ?, ?, ?, 0, ?)",
+        (uuid.uuid4().hex, payload.name.strip(), payload.contact.strip(), payload.message.strip(), now_iso()),
+    )
+    conn.commit()
+    conn.close()
+    append_audit(f"Новое сообщение обратной связи от {payload.name.strip()}")
+    return {"status": "sent"}
+
+
+@app.get("/api/messages")
+def list_messages(authorization: str | None = Header(default=None)):
+    require_admin(authorization)
+    conn = get_db()
+    rows = conn.execute("SELECT * FROM feedback_messages ORDER BY created_at DESC LIMIT 500").fetchall()
+    conn.close()
+    return [{**dict(row), "is_read": bool(row["is_read"])} for row in rows]
+
+
+@app.post("/api/messages/{message_id}/read")
+def read_message(message_id: str, authorization: str | None = Header(default=None)):
+    require_admin(authorization)
+    conn = get_db()
+    conn.execute("UPDATE feedback_messages SET is_read = 1 WHERE id = ?", (message_id,))
+    conn.commit()
+    conn.close()
+    return {"status": "read"}
+
+
+@app.delete("/api/messages/{message_id}")
+def delete_message(message_id: str, authorization: str | None = Header(default=None)):
+    require_admin(authorization)
+    conn = get_db()
+    cursor = conn.execute("DELETE FROM feedback_messages WHERE id = ?", (message_id,))
+    conn.commit()
+    conn.close()
+    if cursor.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Сообщение не найдено")
     return {"status": "deleted"}
 
 

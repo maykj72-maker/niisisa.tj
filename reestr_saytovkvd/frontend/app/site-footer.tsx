@@ -11,6 +11,7 @@ const links = [
   { href: "/news", ru: "Новости", tg: "Ахбор" },
   { href: "/activities", ru: "Наша деятельность", tg: "Фаъолият" },
   { href: "/architecture", ru: "Институт", tg: "Пажӯҳишгоҳ" },
+  { href: "/contact", ru: "Обратная связь", tg: "Алоқа" },
 ];
 
 export default function SiteFooter() {
