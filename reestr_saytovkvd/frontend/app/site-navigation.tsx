@@ -13,6 +13,7 @@ const links = [
   { href: "/services", label: "Хизматрасониҳо", icon: Building2 },
   { href: "/documents", label: "Ҳуҷҷатҳо", icon: BookOpenText },
   { href: "/news", label: "Ахбор", icon: Newspaper },
+  { href: "/activities", label: "Фаъолият", icon: Building2 },
   { href: "/architecture", label: "Пажӯҳишгоҳ", icon: Landmark },
 ];
 

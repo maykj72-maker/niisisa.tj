@@ -393,6 +393,18 @@ def notify_admins(message: str) -> None:
     notify_users(ids, message)
 
 
+DEFAULT_ACTIVITIES = [
+    ("Отдел градостроительства и планирования", ""),
+    ("Проектный отдел", "Дустмуродов Ардашер"),
+    ("Отдел науки и разработки нормативно-технической документации", "Саидов Мирбой"),
+    ("Испытательная лаборатория «Строительные материалы, изделия и конструкции»", ""),
+    ("Отдел инженерных изысканий, сейсмостойкого строительства и обследование технического состояния зданий и сооружений", "Мухаммадиев Давронбек"),
+    ("Учебный центр и аттестации специалистов в сфере архитектуры и строительства", "Джума Зокиров"),
+    ("Издательский центр «ГУП НИИСА»", "Сайдалиев Шухрат"),
+    ("Отдел цифровых технологий, консалтинга и маркетинга", "Салахова Ирина Викторовна"),
+]
+
+
 def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -706,6 +718,27 @@ def ensure_db() -> None:
         "CREATE INDEX IF NOT EXISTS idx_service_orders_status_date "
         "ON service_orders (status, created_at DESC)"
     )
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS activities (
+            id TEXT PRIMARY KEY,
+            position INTEGER NOT NULL DEFAULT 0,
+            title TEXT NOT NULL,
+            head TEXT NOT NULL DEFAULT '',
+            active INTEGER NOT NULL DEFAULT 1,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+        """
+    )
+    if conn.execute("SELECT COUNT(*) FROM activities").fetchone()[0] == 0:
+        _ts = now_iso()
+        for _i, (_title, _head) in enumerate(DEFAULT_ACTIVITIES, start=1):
+            conn.execute(
+                "INSERT INTO activities (id, position, title, head, active, created_at, updated_at) "
+                "VALUES (?, ?, ?, ?, 1, ?, ?)",
+                (uuid.uuid4().hex, _i, _title, _head, _ts, _ts),
+            )
     news_columns = conn.execute("PRAGMA table_info(news)").fetchall()
     existing_news_columns = {column[1] for column in news_columns}
     for column, declaration in {
@@ -2103,6 +2136,91 @@ def delete_news(news_id: str, authorization: str | None = Header(default=None)):
     conn.commit()
     conn.close()
     append_audit(f"Нест карда шуд хабари «{row['title']}»")
+    return {"status": "deleted"}
+
+
+class ActivityPayload(BaseModel):
+    title: str = Field(..., min_length=2, max_length=300)
+    head: str = Field(default="", max_length=160)
+    position: int = Field(default=0, ge=0, le=9999)
+    active: bool = True
+
+
+def _activity_row(row) -> dict[str, Any]:
+    return {
+        "id": row["id"],
+        "position": row["position"],
+        "title": row["title"],
+        "head": row["head"],
+        "active": bool(row["active"]),
+    }
+
+
+@app.get("/api/activities")
+def list_activities(authorization: str | None = Header(default=None)):
+    include_hidden = False
+    if authorization:
+        try:
+            include_hidden = get_user_from_token(authorization)["role"] == "admin"
+        except HTTPException:
+            include_hidden = False
+    conn = get_db()
+    query = "SELECT * FROM activities"
+    if not include_hidden:
+        query += " WHERE active = 1"
+    rows = conn.execute(query + " ORDER BY position, created_at").fetchall()
+    conn.close()
+    return [_activity_row(row) for row in rows]
+
+
+@app.post("/api/activities")
+def create_activity(payload: ActivityPayload, authorization: str | None = Header(default=None)):
+    require_admin(authorization)
+    conn = get_db()
+    position = payload.position or (conn.execute("SELECT COALESCE(MAX(position), 0) FROM activities").fetchone()[0] + 1)
+    timestamp = now_iso()
+    activity_id = uuid.uuid4().hex
+    conn.execute(
+        "INSERT INTO activities (id, position, title, head, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (activity_id, position, payload.title.strip(), payload.head.strip(), int(payload.active), timestamp, timestamp),
+    )
+    conn.commit()
+    row = conn.execute("SELECT * FROM activities WHERE id = ?", (activity_id,)).fetchone()
+    conn.close()
+    append_audit(f"Добавлено направление деятельности: {payload.title.strip()}")
+    return _activity_row(row)
+
+
+@app.put("/api/activities/{activity_id}")
+def update_activity(activity_id: str, payload: ActivityPayload, authorization: str | None = Header(default=None)):
+    require_admin(authorization)
+    conn = get_db()
+    cursor = conn.execute(
+        "UPDATE activities SET title = ?, head = ?, position = ?, active = ?, updated_at = ? WHERE id = ?",
+        (payload.title.strip(), payload.head.strip(), payload.position, int(payload.active), now_iso(), activity_id),
+    )
+    conn.commit()
+    if cursor.rowcount == 0:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Направление не найдено")
+    row = conn.execute("SELECT * FROM activities WHERE id = ?", (activity_id,)).fetchone()
+    conn.close()
+    append_audit(f"Изменено направление деятельности: {payload.title.strip()}")
+    return _activity_row(row)
+
+
+@app.delete("/api/activities/{activity_id}")
+def delete_activity(activity_id: str, authorization: str | None = Header(default=None)):
+    require_admin(authorization)
+    conn = get_db()
+    row = conn.execute("SELECT title FROM activities WHERE id = ?", (activity_id,)).fetchone()
+    if row is None:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Направление не найдено")
+    conn.execute("DELETE FROM activities WHERE id = ?", (activity_id,))
+    conn.commit()
+    conn.close()
+    append_audit(f"Удалено направление деятельности: {row['title']}")
     return {"status": "deleted"}
 
 
