@@ -3342,3 +3342,40 @@ html[data-theme="dark"] .architecture-site .portal-news-form textarea {
     min-height: 116px;
   }
 }
+
+/* Design polish: consistent accent, readable mobile table, tighter hero heading */
+.registry-root .registry-auth-card form .MuiButton-contained {
+  background: #1d7665;
+}
+
+.registry-root .registry-auth-card form .MuiButton-contained:hover {
+  background: #155e50;
+}
+
+.registry-root .registry-auth-card .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #3fb9a2;
+}
+
+.registry-root .registry-hero .MuiTypography-h4 {
+  line-height: 1.2;
+}
+
+.registry-root .registry-hero .MuiTypography-overline {
+  line-height: 1.6;
+}
+
+@media (max-width: 720px) {
+  .registry-root .registry-table-paper .MuiTableContainer-root {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .registry-root .registry-table-paper .MuiTable-root {
+    min-width: 560px;
+  }
+}
+
+.registry-root :focus-visible {
+  outline: 2px solid #1d7665;
+  outline-offset: 2px;
+}
