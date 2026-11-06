@@ -1901,6 +1901,7 @@ export default function Home() {
 
                 <Box component="form" onSubmit={handleCreateCertificate}>
                   <Grid container spacing={2}>
+                    <Grid size={{ xs: 12 }}><Box className="registry-form-section"><span className="registry-form-section__num">1</span><span>Данные специалиста</span></Box></Grid>
                     {user.role === "admin" && (
                       <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
@@ -1917,11 +1918,12 @@ export default function Home() {
                         />
                       </Grid>
                     )}
-                    <Grid size={{ xs: 12, sm: 6 }}><TextField required fullWidth label="ФИО специалиста" value={form.fullName} onChange={(e) => handleChange("fullName", e.target.value)} /></Grid>
+                    <Grid size={{ xs: 12, sm: 6 }}><TextField required fullWidth label="ФИО специалиста" placeholder="Иванов Иван Иванович" value={form.fullName} onChange={(e) => handleChange("fullName", e.target.value)} /></Grid>
                     <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth type="date" label="Дата рождения" slotProps={{ inputLabel: { shrink: true } }} value={form.birthDate} onChange={(e) => handleChange("birthDate", e.target.value)} /></Grid>
                     <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth label="Место работы" value={form.workplace} onChange={(e) => handleChange("workplace", e.target.value)} /></Grid>
                     <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth label="Должность" value={form.position} onChange={(e) => handleChange("position", e.target.value)} /></Grid>
                     <Grid size={{ xs: 12, sm: 6 }}><TextField required fullWidth label="Специальность" value={form.specialty} onChange={(e) => handleChange("specialty", e.target.value)} /></Grid>
+                    <Grid size={{ xs: 12 }}><Box className="registry-form-section"><span className="registry-form-section__num">2</span><span>Обучение</span></Box></Grid>
                     <Grid size={{ xs: 12, sm: 6 }}>
                       <TextField fullWidth select label="Вид обучения" value={form.trainingType} onChange={(e) => handleChange("trainingType", e.target.value)}>
                         {['Первоначальное обучение', 'Переподготовка', 'Повышение квалификации'].map((option) => (
@@ -1930,13 +1932,15 @@ export default function Home() {
                       </TextField>
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6 }}><TextField required fullWidth label="Учебный центр" value={form.trainingCenter} onChange={(e) => handleChange("trainingCenter", e.target.value)} /></Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}><TextField required fullWidth label="Название курса" value={form.courseName} onChange={(e) => handleChange("courseName", e.target.value)} /></Grid>
+                    <Grid size={{ xs: 12, sm: 6 }}><TextField required fullWidth label="Название курса" placeholder="Экспертиза проектной документации" value={form.courseName} onChange={(e) => handleChange("courseName", e.target.value)} /></Grid>
                     <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth type="date" label="Дата начала" slotProps={{ inputLabel: { shrink: true } }} value={form.startDate} onChange={(e) => handleChange("startDate", e.target.value)} /></Grid>
                     <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth type="date" label="Дата окончания" slotProps={{ inputLabel: { shrink: true } }} value={form.endDate} onChange={(e) => handleChange("endDate", e.target.value)} /></Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth label="Учебных часов" value={form.hours} onChange={(e) => handleChange("hours", e.target.value)} /></Grid>
+                    <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth label="Учебных часов" placeholder="например, 72" value={form.hours} onChange={(e) => handleChange("hours", e.target.value)} /></Grid>
+                    <Grid size={{ xs: 12 }}><Box className="registry-form-section"><span className="registry-form-section__num">3</span><span>Аттестация и сертификат</span></Box></Grid>
                     <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth label="Результат аттестации" value={form.result} onChange={(e) => handleChange("result", e.target.value)} /></Grid>
                     <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth type="date" label="Дата выдачи сертификата" slotProps={{ inputLabel: { shrink: true } }} value={form.certificateDate} onChange={(e) => handleChange("certificateDate", e.target.value)} /></Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth label="Срок действия" value={form.validityPeriod} onChange={(e) => handleChange("validityPeriod", e.target.value)} /></Grid>
+                    <Grid size={{ xs: 12, sm: 6 }}><TextField fullWidth label="Срок действия" placeholder="например, 5 лет" helperText="Укажите срок в годах или дату окончания." value={form.validityPeriod} onChange={(e) => handleChange("validityPeriod", e.target.value)} /></Grid>
+                    <Grid size={{ xs: 12 }}><Box className="registry-form-section"><span className="registry-form-section__num">4</span><span>Дополнительно</span></Box></Grid>
                     <Grid size={{ xs: 12 }}><TextField fullWidth multiline minRows={3} label="Комментарий" value={form.comments} onChange={(e) => handleChange("comments", e.target.value)} /></Grid>
                   </Grid>
 
