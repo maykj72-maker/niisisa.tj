@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight, BookOpenText, Building2, ClipboardList, Landmark, Newspaper } from "lucide-react";
+import { ArrowUpRight, BookOpenText, Building2, ClipboardList, Landmark, Newspaper, Package } from "lucide-react";
 import type { ReactNode } from "react";
 import CompanyIdentity from "./company-identity";
 import NotificationBell from "./notification-bell";
@@ -14,6 +14,7 @@ const links = [
   { href: "/", ru: "Реестр сертификатов", tg: "Феҳристи сертификатҳо", icon: ClipboardList },
   { href: "/services", ru: "Услуги", tg: "Хизматрасониҳо", icon: Building2 },
   { href: "/documents", ru: "Документы", tg: "Ҳуҷҷатҳо", icon: BookOpenText },
+  { href: "/goods", ru: "Товары", tg: "Молҳо", icon: Package },
   { href: "/news", ru: "Новости", tg: "Ахбор", icon: Newspaper },
   { href: "/activities", ru: "Наша деятельность", tg: "Фаъолият", icon: Building2 },
   { href: "/architecture", ru: "Институт", tg: "Пажӯҳишгоҳ", icon: Landmark },
