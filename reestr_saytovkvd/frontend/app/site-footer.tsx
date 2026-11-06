@@ -11,6 +11,7 @@ const links = [
   { href: "/news", ru: "Новости", tg: "Ахбор" },
   { href: "/activities", ru: "Наша деятельность", tg: "Фаъолият" },
   { href: "/architecture", ru: "Институт", tg: "Пажӯҳишгоҳ" },
+  { href: "/goods", ru: "Товары", tg: "Молҳо" },
   { href: "/contact", ru: "Обратная связь", tg: "Алоқа" },
 ];
 
