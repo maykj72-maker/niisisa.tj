@@ -2849,7 +2849,8 @@ html[data-theme="dark"] .architecture-site .portal-news-form textarea {
   grid-column: 1;
   grid-row: 1;
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow-y: auto;
   flex-direction: column;
   gap: 24px;
   padding: 18px 11px;
@@ -3273,6 +3274,8 @@ html[data-theme="dark"] .architecture-site .portal-news-form textarea {
 
   .registry-dashboard-sidebar {
     position: relative;
+    height: auto;
+    overflow-y: visible;
     min-height: 0;
     gap: 8px;
     padding: 8px 14px;
