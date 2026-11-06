@@ -22,6 +22,7 @@ import SiteNavigation from "../site-navigation";
 import SiteFooter from "../site-footer";
 import DashboardSidebar from "../dashboard-sidebar";
 import { motion } from "framer-motion";
+import { useTr } from "../i18n";
 
 const serviceInfo: Record<string, string> = {
   "urban-planning": "Генеральные планы городов, планировка территорий и транспортная инфраструктура.",
@@ -32,6 +33,32 @@ const serviceInfo: Record<string, string> = {
   training: "Повышение квалификации, обучение и аттестация специалистов.",
   digital: "Цифровые услуги и профессиональные консультации.",
   printing: "Печать, сканирование и издательские услуги.",
+};
+const serviceInfoTg: Record<string, string> = {
+  "urban-planning": "Нақшаҳои асосии шаҳрҳо, банақшагирии ҳудудҳо ва инфрасохтори нақлиётӣ.",
+  design: "Тарҳрезии объектҳои истиқоматӣ, ҷамъиятӣ ва инфрасохторӣ.",
+  inspection: "Баррасии техникии биноҳо ва таҳқиқоти муҳандисӣ.",
+  laboratory: "Озмоиши маводҳои сохтмонӣ ва назорати сифати онҳо.",
+  standards: "Таҳия ва пешниҳоди маводҳои меъёрӣ ва методӣ.",
+  training: "Такмили ихтисос, омӯзиш ва аттестатсияи мутахассисон.",
+  digital: "Хизматрасониҳои рақамӣ ва маслиҳатҳои касбӣ.",
+  printing: "Чоп, сканер ва хизматрасониҳои нашриётӣ.",
+};
+const categoryTg: Record<string, string> = {
+  "urban-planning": "Шаҳрсозӣ",
+  design: "Тарҳрезӣ",
+  inspection: "Баррасии техникӣ",
+  laboratory: "Озмоишҳои озмоишгоҳӣ",
+  standards: "Ҳуҷҷатҳои меъёрӣ",
+  training: "Омӯзиш ва аттестатсия",
+  digital: "Хизматрасониҳои рақамӣ ва маслиҳат",
+  printing: "Чоп ва хизматрасониҳои нашриётӣ",
+};
+const orderStatusesTg: Record<string, string> = {
+  new: "Нав",
+  in_progress: "Дар кор",
+  completed: "Анҷом ёфт",
+  cancelled: "Бекор карда шуд",
 };
 const orderStatuses: Record<string, string> = {
   new: "Новая",
@@ -67,6 +94,8 @@ function readError(responseText: string, fallback: string) {
 }
 
 export default function ServicesPage() {
+  const tr = useTr();
+  const catTitle = (category: ServiceCategory) => tr(category.title, categoryTg[category.id] ?? category.title);
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [auth, setAuth] = useState<StoredAuth>(null);
@@ -252,12 +281,12 @@ export default function ServicesPage() {
       <Container className="utility-page__container" maxWidth="lg" sx={{ py: 4 }}>
         <Stack spacing={3}>
           <Box className="utility-page__hero">
-            <Typography variant="overline">Каталог услуг</Typography>
+            <Typography variant="overline">{tr("Каталог услуг", "Феҳристи хизматрасониҳо")}</Typography>
             <Typography variant="h3" component="h1" sx={{ fontWeight: 800, fontSize: { xs: 30, md: 40 } }}>
-              Услуги и заявки
+              {tr("Услуги и заявки", "Хизматрасониҳо ва дархостҳо")}
             </Typography>
             <Typography color="text.secondary" sx={{ mt: 1 }}>
-              Выберите категорию, укажите задачу и отправьте заявку институту.
+              {tr("Выберите категорию, укажите задачу и отправьте заявку институту.", "Категорияро интихоб кунед, вазифаро нависед ва дархостро ба пажӯҳишгоҳ фиристед.")}
             </Typography>
           </Box>
           {error && <Alert severity="error" onClose={() => setError("")}>{error}</Alert>}
@@ -275,9 +304,9 @@ export default function ServicesPage() {
               >
                 <Card sx={{ borderRadius: 3, height: "100%" }}>
                 <CardContent>
-                  <Typography variant="h6" sx={{ fontWeight: 750 }}>{category.title}</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 750 }}>{catTitle(category)}</Typography>
                   <Typography color="text.secondary" sx={{ mt: 1 }}>
-                    {serviceInfo[category.id] || "Услуги и консультации института по этому направлению."}
+                    {tr(serviceInfo[category.id], serviceInfoTg[category.id]) || tr("Услуги и консультации института по этому направлению.", "Хизматрасониҳо ва маслиҳатҳои пажӯҳишгоҳ дар ин самт.")}
                   </Typography>
                 </CardContent>
                 <CardActions sx={{ px: 2, pb: 2 }}>
@@ -288,7 +317,7 @@ export default function ServicesPage() {
                       formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
                     }}
                   >
-                    Оставить заявку
+                    {tr("Оставить заявку", "Дархост гузоштан")}
                   </Button>
                 </CardActions>
                 </Card>
@@ -299,33 +328,33 @@ export default function ServicesPage() {
           {auth?.user.role === "applicant" ? (
             <Card ref={formRef} component="form" onSubmit={submitOrder} sx={{ borderRadius: 3, scrollMarginTop: 24 }}>
               <CardContent>
-                <Typography variant="h5" sx={{ fontWeight: 800, mb: 2 }}>Заявка на услугу</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 800, mb: 2 }}>{tr("Заявка на услугу", "Дархост барои хизматрасонӣ")}</Typography>
                 <Stack spacing={2}>
                   <TextField
                     select
                     required
-                    label="Категория услуги"
+                    label={tr("Категория услуги", "Категорияи хизматрасонӣ")}
                     value={form.category}
                     onChange={(event) => setForm((current) => ({ ...current, category: event.target.value }))}
                   >
-                    {categories.map((category) => <MenuItem key={category.id} value={category.id}>{category.title}</MenuItem>)}
+                    {categories.map((category) => <MenuItem key={category.id} value={category.id}>{catTitle(category)}</MenuItem>)}
                   </TextField>
                   <TextField
                     required
-                    label="Какая услуга вам нужна?"
+                    label={tr("Какая услуга вам нужна?", "Кадом хизматрасонӣ ба шумо лозим аст?")}
                     value={form.serviceName}
                     slotProps={{ htmlInput: { minLength: 3, maxLength: 160 } }}
                     onChange={(event) => setForm((current) => ({ ...current, serviceName: event.target.value }))}
                   />
                   <TextField
                     required
-                    label="Телефон для связи"
+                    label={tr("Телефон для связи", "Телефон барои тамос")}
                     value={form.phone}
                     slotProps={{ htmlInput: { maxLength: 32, inputMode: "tel", autoComplete: "tel" } }}
                     onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
                   />
                   <TextField
-                    label="Организация (необязательно)"
+                    label={tr("Организация (необязательно)", "Ташкилот (ихтиёрӣ)")}
                     value={form.organization}
                     slotProps={{ htmlInput: { maxLength: 160 } }}
                     onChange={(event) => setForm((current) => ({ ...current, organization: event.target.value }))}
@@ -333,37 +362,37 @@ export default function ServicesPage() {
                   <TextField
                     multiline
                     minRows={3}
-                    label="Описание задачи"
+                    label={tr("Описание задачи", "Шарҳи вазифа")}
                     value={form.details}
                     slotProps={{ htmlInput: { maxLength: 2000 } }}
                     onChange={(event) => setForm((current) => ({ ...current, details: event.target.value }))}
                   />
                   <Button type="submit" variant="contained" disabled={saving} startIcon={<AssignmentOutlined />}>
-                    {saving ? "Отправляем..." : "Отправить заявку"}
+                    {saving ? tr("Отправляем...", "Фиристода истодаем...") : tr("Отправить заявку", "Фиристодани дархост")}
                   </Button>
                 </Stack>
               </CardContent>
             </Card>
           ) : auth?.user.role === "admin" ? (
             <Alert severity="info">
-              Вы вошли как администратор. Заявки отображаются ниже; подавать заявку можно из кабинета заявителя.
+              {tr("Вы вошли как администратор. Заявки отображаются ниже; подавать заявку можно из кабинета заявителя.", "Шумо ҳамчун маъмур ворид шудаед. Дархостҳо дар поён нишон дода мешаванд; дархост гузоштан аз кабинети довталаб имконпазир аст.")}
             </Alert>
           ) : (
             <Alert
               severity="info"
-              action={<Button component={Link} href="/" color="inherit">Войти / регистрация</Button>}
+              action={<Button component={Link} href="/" color="inherit">{tr("Войти / регистрация", "Воридшавӣ / бақайдгирӣ")}</Button>}
             >
-              Для отправки и отслеживания заявки войдите в кабинет заявителя.
+              {tr("Для отправки и отслеживания заявки войдите в кабинет заявителя.", "Барои фиристодан ва пайгирии дархост ба кабинети довталаб ворид шавед.")}
             </Alert>
           )}
 
           {auth && (
             <Box>
               <Typography variant="h5" sx={{ fontWeight: 800, mb: 2 }}>
-                {auth.user.role === "admin" ? "Заявки клиентов" : "Мои заявки"}
+                {auth.user.role === "admin" ? tr("Заявки клиентов", "Дархостҳои муштариён") : tr("Мои заявки", "Дархостҳои ман")}
               </Typography>
-              {loading ? <Typography color="text.secondary">Загружаем заявки...</Typography> : orders.length === 0 ? (
-                <Card sx={{ borderRadius: 3 }}><CardContent><Typography color="text.secondary">Заявок пока нет.</Typography></CardContent></Card>
+              {loading ? <Typography color="text.secondary">{tr("Загружаем заявки...", "Дархостҳо бор карда мешаванд...")}</Typography> : orders.length === 0 ? (
+                <Card sx={{ borderRadius: 3 }}><CardContent><Typography color="text.secondary">{tr("Заявок пока нет.", "Ҳоло дархост нест.")}</Typography></CardContent></Card>
               ) : (
                 <Stack spacing={2}>
                   {orders.map((order) => (
@@ -373,24 +402,24 @@ export default function ServicesPage() {
                           <Box>
                             <Typography variant="h6" sx={{ fontWeight: 750 }}>{order.service_name}</Typography>
                             <Typography color="text.secondary">
-                              {categories.find((category) => category.id === order.category)?.title ?? order.category}
+                              {(() => { const found = categories.find((category) => category.id === order.category); return found ? catTitle(found) : order.category; })()}
                             </Typography>
                           </Box>
                           <Chip
                             icon={<CheckCircleOutlined />}
                             color={order.status === "completed" ? "success" : order.status === "cancelled" ? "default" : "primary"}
-                            label={orderStatuses[order.status] || order.status}
+                            label={tr(orderStatuses[order.status], orderStatusesTg[order.status]) || order.status}
                           />
                         </Stack>
-                        <Typography sx={{ mt: 1 }}>{order.details || "Описание не указано"}</Typography>
+                        <Typography sx={{ mt: 1 }}>{order.details || tr("Описание не указано", "Шарҳ нишон дода нашудааст")}</Typography>
                         {auth.user.role === "admin" && (
                           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                            Заявитель: {order.customer_name} · {order.phone}{order.organization ? ` · ${order.organization}` : ""}
+                            {tr("Заявитель", "Довталаб")}: {order.customer_name} · {order.phone}{order.organization ? ` · ${order.organization}` : ""}
                           </Typography>
                         )}
                         {order.admin_note && (
                           <Typography variant="body2" sx={{ mt: 1 }}>
-                            Ответ института: {order.admin_note}
+                            {tr("Ответ института", "Ҷавоби пажӯҳишгоҳ")}: {order.admin_note}
                           </Typography>
                         )}
                         <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
@@ -399,7 +428,7 @@ export default function ServicesPage() {
                         {auth.user.role === "admin" && (
                           <Stack spacing={1.5} sx={{ mt: 2 }}>
                             <TextField
-                              label="Ответ / примечание для заявителя"
+                              label={tr("Ответ / примечание для заявителя", "Ҷавоб / эзоҳ барои довталаб")}
                               value={adminNotes[order.id] || ""}
                               slotProps={{ htmlInput: { maxLength: 1000 } }}
                               onChange={(event) => setAdminNotes((current) => ({ ...current, [order.id]: event.target.value }))}
@@ -407,10 +436,10 @@ export default function ServicesPage() {
                             <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
                               {Object.entries(orderStatuses).map(([status, title]) => (
                                 <Button key={status} size="small" variant={order.status === status ? "contained" : "outlined"} onClick={() => void updateOrder(order, status)}>
-                                  {title}
+                                  {tr(title, orderStatusesTg[status])}
                                 </Button>
                               ))}
-                              <Button color="error" size="small" onClick={() => void removeOrder(order)}>Удалить</Button>
+                              <Button color="error" size="small" onClick={() => void removeOrder(order)}>{tr("Удалить", "Нест кардан")}</Button>
                             </Stack>
                           </Stack>
                         )}
