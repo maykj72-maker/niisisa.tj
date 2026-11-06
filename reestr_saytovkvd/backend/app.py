@@ -21,8 +21,8 @@ from pydantic import BaseModel, Field, field_validator
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.abspath(os.getenv("REGISTRY_DB_PATH", os.path.join(BASE_DIR, "registry.db")))
-MEDIA_DIR = os.path.join(BASE_DIR, "uploads")
-DOCUMENTS_DIR = os.path.join(BASE_DIR, "private_documents")
+MEDIA_DIR = os.path.abspath(os.getenv("REGISTRY_MEDIA_DIR", os.path.join(BASE_DIR, "uploads")))
+DOCUMENTS_DIR = os.path.abspath(os.getenv("REGISTRY_DOCUMENTS_DIR", os.path.join(BASE_DIR, "private_documents")))
 APP_ENV = os.getenv("APP_ENV", "development").strip().lower()
 IS_PRODUCTION = APP_ENV == "production"
 if APP_ENV not in {"development", "test", "production"}:

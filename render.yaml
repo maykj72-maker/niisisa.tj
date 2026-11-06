@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: niisisa-api
+    runtime: python
+    plan: starter
+    rootDir: reestr_saytovkvd/backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: REGISTRY_DB_PATH
+        value: /var/data/registry.db
+      - key: REGISTRY_MEDIA_DIR
+        value: /var/data/uploads
+      - key: REGISTRY_DOCUMENTS_DIR
+        value: /var/data/private_documents
+      - key: REGISTRY_ADMIN_CODE
+        sync: false
+      - key: REGISTRY_ADMIN_PASSWORD
+        sync: false
+      - key: REGISTRY_CORS_ORIGINS
+        sync: false
+    disk:
+      name: niisisa-data
+      mountPath: /var/data
+      sizeGB: 1
