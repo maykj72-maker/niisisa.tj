@@ -33,4 +33,9 @@ if (
   parsedApiBase.hostname = window.location.hostname;
 }
 
-export const API_BASE = parsedApiBase.toString().replace(/\/+$/, "");
+// In production the browser always talks to the site it was loaded from; next.config.ts
+// rewrites /api/* to the backend. This keeps cookies first-party on any domain
+// (Railway domain or a custom one) without changing NEXT_PUBLIC_API_BASE.
+export const API_BASE = process.env.NODE_ENV === "production"
+  ? "/api"
+  : parsedApiBase.toString().replace(/\/+$/, "");

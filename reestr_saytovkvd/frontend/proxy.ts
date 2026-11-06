@@ -45,6 +45,24 @@ export function proxy(request: NextRequest) {
   ].join("; ");
 
   const requestHeaders = new Headers(request.headers);
+  // The browser talks to /api on the page's own origin (custom domain or Railway domain) and
+  // next.config.ts forwards it to the backend, whose CSRF check only knows its configured origin.
+  // A genuinely same-origin write is therefore presented to the backend under that origin;
+  // a cross-site one keeps its real Origin and is rejected by the backend.
+  if (
+    request.nextUrl.pathname.startsWith("/api/")
+    && ["POST", "PUT", "DELETE"].includes(request.method)
+  ) {
+    const origin = request.headers.get("origin");
+    const host = (forwardedHost ?? "").split(",")[0].trim().toLowerCase();
+    try {
+      if (origin && host && new URL(origin).host.toLowerCase() === host) {
+        requestHeaders.set("origin", configuredApiUrl.origin);
+      }
+    } catch {
+      // Malformed Origin: leave it untouched so the backend rejects it.
+    }
+  }
   requestHeaders.set("x-nonce", nonce);
   requestHeaders.set("Content-Security-Policy", csp);
 
