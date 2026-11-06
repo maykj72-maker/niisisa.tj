@@ -3956,3 +3956,26 @@ html[data-theme="dark"] .registry-doc-row {
 .utility-page--with-dashboard .unified-site-header__actions {
   margin-left: auto;
 }
+
+.activities-table {
+  background: #fff;
+  border: 1px solid rgba(19, 34, 56, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.activities-table th {
+  font-weight: 700;
+  background: rgba(19, 34, 56, 0.04);
+}
+html[data-theme="dark"] .activities-table {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+html[data-theme="dark"] .activities-table th,
+html[data-theme="dark"] .activities-table td {
+  color: #e8eef7;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+html[data-theme="dark"] .activities-table th {
+  background: rgba(255, 255, 255, 0.06);
+}

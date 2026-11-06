@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   Newspaper,
   Settings2,
+  UsersRound,
 } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { getAdminSectionSnapshot, notifyAdminSectionChange, subscribeToAdminSection, type AdminSection } from "./admin-section";
@@ -38,6 +39,7 @@ const linksByRole = {
     { href: "/?adminSection=news", label: "Новости", icon: Newspaper },
     { href: "/documents", label: "Документы", icon: FileText },
     { href: "/services", label: "Услуги", icon: FolderKanban },
+    { href: "/activities", label: "Наша деятельность", icon: UsersRound },
     { href: "/?adminSection=site-content", label: "Идоракунии сомона", icon: Settings2 },
   ],
   applicant: [
