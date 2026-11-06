@@ -99,3 +99,65 @@ html[data-theme="dark"] .MuiButton-text.MuiButton-colorSuccess {
 html[data-theme="dark"] .MuiSvgIcon-colorDisabled {
   color: rgba(255, 255, 255, 0.38);
 }
+
+/* Institute pages (/architecture, /news): light cards and sections stay readable in dark mode. */
+html[data-theme="dark"] .architecture-site .portal-feature-news.portal-section,
+html[data-theme="dark"] .architecture-site .portal-news-page,
+html[data-theme="dark"] .architecture-site .portal-section {
+  background: #0d1b2e;
+}
+
+html[data-theme="dark"] .architecture-site .portal-news.portal-section {
+  background: #101f33;
+}
+
+html[data-theme="dark"] .architecture-site .portal-leader-card,
+html[data-theme="dark"] .architecture-site .portal-area-card,
+html[data-theme="dark"] .architecture-site .portal-capability-card {
+  border-color: #293d57;
+  color: #e5edf8;
+  background: #14263e;
+}
+
+html[data-theme="dark"] .architecture-site .portal-leader-card *,
+html[data-theme="dark"] .architecture-site .portal-area-card *,
+html[data-theme="dark"] .architecture-site .portal-capability-card * {
+  color: inherit;
+}
+
+html[data-theme="dark"] .architecture-site .portal-kicker,
+html[data-theme="dark"] .architecture-site .portal-section-heading__mark,
+html[data-theme="dark"] .architecture-site .portal-inline-link,
+html[data-theme="dark"] .architecture-site .portal-news-feed__source {
+  color: #f0c46a;
+}
+
+html[data-theme="dark"] .architecture-site .portal-service-card a,
+html[data-theme="dark"] .architecture-site .portal-service-card a *,
+html[data-theme="dark"] .architecture-site .portal-feature-news__story a:not(.portal-button),
+html[data-theme="dark"] .architecture-site .portal-feature-news__story li {
+  color: #cfe0f5;
+}
+
+html[data-theme="dark"] .architecture-site .portal-feature-news__story p,
+html[data-theme="dark"] .architecture-site .portal-feature-news__facts span {
+  color: #d5e0ee;
+}
+
+html[data-theme="dark"] .architecture-site .portal-photo-card {
+  background: #14263e;
+}
+
+/* Admin news form and other light MUI boxes inside the dark cabinet. */
+html[data-theme="dark"] .registry-news-form {
+  border-color: #3a4d66 !important;
+  background: #13243b !important;
+}
+
+html[data-theme="dark"] .registry-dashboard .portal-content-manager .MuiOutlinedInput-root {
+  background-color: #0e1c2f;
+}
+
+html[data-theme="dark"] .utility-page .MuiChip-root:not(.MuiChip-colorSuccess):not(.MuiChip-colorPrimary) .MuiChip-label {
+  color: #e8eef7;
+}
