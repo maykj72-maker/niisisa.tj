@@ -1,6 +1,7 @@
 "use client";
 
-import { use, useCallback, useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import {
   Alert, Box, Button, Chip, Container, Dialog, DialogActions, DialogContent, DialogTitle,
   FormControlLabel, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
@@ -132,10 +133,11 @@ function CollectionView({ name, onError }: { name: string; onError: (text: strin
       fetch(`${API_BASE}/cms/${name}`, { credentials: "include" }),
     ]);
     if (!schemaResponse.ok || !itemsResponse.ok) return onError(await errorText(itemsResponse, "Не удалось загрузить раздел"));
-    setSchema((await schemaResponse.json()) as Schema);
+    const loadedSchema = (await schemaResponse.json()) as Schema;
+    setSchema(loadedSchema);
     const loaded = (await itemsResponse.json()) as Item[];
     setItems(loaded);
-    const sources = Array.from(new Set(((await schemaResponse.clone().json()) as Schema)[name]?.fields.map((field) => field.optionsFrom).filter(Boolean) as string[]));
+    const sources = Array.from(new Set(loadedSchema[name]?.fields.map((field) => field.optionsFrom).filter(Boolean) as string[]));
     const entries = await Promise.all(sources.map(async (source) => {
       const response = await fetch(`${API_BASE}/cms/${source}`, { credentials: "include" });
       return [source, response.ok ? ((await response.json()) as Item[]) : []] as const;
@@ -322,8 +324,8 @@ const TITLES: Record<string, string> = {
   pages: "Страницы", about: "О предприятии", settings: "Настройки", messages: "Сообщения и обратная связь", logs: "Логи",
 };
 
-export default function AdminSectionPage({ params }: { params: Promise<{ section: string }> }) {
-  const { section } = use(params);
+function AdminSection() {
+  const section = String(useParams<{ section: string }>().section ?? "");
   const gate = useAdminGate();
   const [error, setError] = useState("");
   const onError = useCallback((text: string) => setError(text), []);
@@ -354,5 +356,13 @@ export default function AdminSectionPage({ params }: { params: Promise<{ section
         <SiteFooter />
       </Box>
     </Box>
+  );
+}
+
+export default function AdminSectionPage() {
+  return (
+    <Suspense fallback={null}>
+      <AdminSection />
+    </Suspense>
   );
 }

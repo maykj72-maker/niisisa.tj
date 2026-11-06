@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { MotionConfig } from "framer-motion";
 import "./globals.css";
 import "./dark-fixes.css";
+import "./mobile-fixes.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
