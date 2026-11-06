@@ -29,7 +29,9 @@ export function proxy(request: NextRequest) {
   const apiOrigin = apiUrl.origin;
   const csp = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isProduction ? "" : " 'unsafe-eval'"}`,
+    // Pages are prerendered and cached (cacheComponents), so their <script> tags carry no
+    // per-request nonce. A nonce + 'strict-dynamic' policy would block every script.
+    `script-src 'self' 'unsafe-inline'${isProduction ? "" : " 'unsafe-eval'"}`,
     "style-src 'self' 'unsafe-inline'",
     `img-src 'self' data: blob: ${apiOrigin} https:`,
     `media-src 'self' blob: ${apiOrigin} https:`,
