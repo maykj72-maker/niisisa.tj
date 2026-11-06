@@ -718,6 +718,16 @@ def ensure_db() -> None:
         if column not in existing_news_columns:
             conn.execute(f"ALTER TABLE news ADD COLUMN {column} {declaration}")
 
+    existing_document_columns = {column[1] for column in conn.execute("PRAGMA table_info(documents)").fetchall()}
+    for column, declaration in {
+        "status": "TEXT NOT NULL DEFAULT 'published'",
+        "owner_id": "TEXT",
+        "owner_name": "TEXT NOT NULL DEFAULT ''",
+        "review_note": "TEXT NOT NULL DEFAULT ''",
+    }.items():
+        if column not in existing_document_columns:
+            conn.execute(f"ALTER TABLE documents ADD COLUMN {column} {declaration}")
+
     legacy_admin = conn.execute(
         "SELECT id FROM users WHERE code = ? AND password_hash = ?",
         ("GOS-ADMIN", LEGACY_ADMIN_PASSWORD_HASH),
@@ -1188,7 +1198,30 @@ def public_document(row: sqlite3.Row) -> dict[str, Any]:
         "content_type": row["content_type"],
         "file_size": row["file_size"],
         "created_at": row["created_at"],
+        "status": row["status"],
+        "owner_name": row["owner_name"],
     }
+
+
+DOCUMENT_COLUMNS = "id, title, category, description, original_name, content_type, file_size, created_at, status, owner_id, owner_name"
+
+
+@app.get("/api/documents/requests")
+def get_document_requests(authorization: str | None = Header(default=None)):
+    user = get_user_from_token(authorization)
+    conn = get_db()
+    if user["role"] == "admin":
+        rows = conn.execute(
+            f"SELECT {DOCUMENT_COLUMNS} FROM documents WHERE owner_id IS NOT NULL "
+            "ORDER BY CASE status WHEN 'pending' THEN 0 ELSE 1 END, created_at DESC"
+        ).fetchall()
+    else:
+        rows = conn.execute(
+            f"SELECT {DOCUMENT_COLUMNS} FROM documents WHERE owner_id = ? ORDER BY created_at DESC",
+            (user["id"],),
+        ).fetchall()
+    conn.close()
+    return [public_document(row) for row in rows]
 
 
 @app.get("/api/documents")
@@ -1198,14 +1231,14 @@ def get_documents(category: str | None = None):
     conn = get_db()
     if category:
         rows = conn.execute(
-            "SELECT id, title, category, description, original_name, content_type, file_size, created_at "
-            "FROM documents WHERE category = ? ORDER BY created_at DESC, id DESC",
+            "SELECT id, title, category, description, original_name, content_type, file_size, created_at, status, owner_id, owner_name "
+            "FROM documents WHERE status = 'published' AND category = ? ORDER BY created_at DESC, id DESC",
             (category,),
         ).fetchall()
     else:
         rows = conn.execute(
-            "SELECT id, title, category, description, original_name, content_type, file_size, created_at "
-            "FROM documents ORDER BY created_at DESC, id DESC"
+            "SELECT id, title, category, description, original_name, content_type, file_size, created_at, status, owner_id, owner_name "
+            "FROM documents WHERE status = 'published' ORDER BY created_at DESC, id DESC"
         ).fetchall()
     conn.close()
     return [public_document(row) for row in rows]
@@ -1221,8 +1254,7 @@ async def upload_document(
     filename: str | None = Header(default=None, alias="X-File-Name"),
 ):
     user = get_user_from_token(authorization)
-    if user["role"] != "admin":
-        raise HTTPException(status_code=403, detail="Только администратор может добавлять документы")
+    is_admin = user["role"] == "admin"
     if category not in DOCUMENT_CATEGORIES:
         raise HTTPException(status_code=400, detail="Некорректная категория документа")
 
@@ -1264,8 +1296,8 @@ async def upload_document(
         created_at = now_iso()
         conn = get_db()
         conn.execute(
-            "INSERT INTO documents (id, title, category, description, stored_name, original_name, content_type, file_size, created_by, created_at) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO documents (id, title, category, description, stored_name, original_name, content_type, file_size, created_by, created_at, status, owner_id, owner_name) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 document_id,
                 title.strip(),
@@ -1277,12 +1309,14 @@ async def upload_document(
                 total_size,
                 user["id"],
                 created_at,
+                "published" if is_admin else "pending",
+                None if is_admin else user["id"],
+                "" if is_admin else user["name"],
             ),
         )
         conn.commit()
         row = conn.execute(
-            "SELECT id, title, category, description, original_name, content_type, file_size, created_at "
-            "FROM documents WHERE id = ?",
+            f"SELECT {DOCUMENT_COLUMNS} FROM documents WHERE id = ?",
             (document_id,),
         ).fetchone()
         conn.close()
@@ -1292,19 +1326,25 @@ async def upload_document(
         raise
 
     append_audit(f"Илова шуд ҳуҷҷати «{title.strip()}»")
+    if not is_admin:
+        notify_admins(f"Новый документ на проверку: «{title.strip()}» от {user['name']}")
     return public_document(row)
 
 
 @app.get("/api/documents/{document_id}/download")
-def download_document(document_id: str):
+def download_document(document_id: str, authorization: str | None = Header(default=None)):
     conn = get_db()
     row = conn.execute(
-        "SELECT stored_name, original_name, content_type FROM documents WHERE id = ?",
+        "SELECT stored_name, original_name, content_type, status, owner_id FROM documents WHERE id = ?",
         (document_id,),
     ).fetchone()
     conn.close()
     if row is None:
         raise HTTPException(status_code=404, detail="Документ не найден")
+    if row["status"] != "published":
+        viewer = get_user_from_token(authorization)
+        if viewer["role"] != "admin" and viewer["id"] != row["owner_id"]:
+            raise HTTPException(status_code=404, detail="Документ не найден")
     saved_path = os.path.abspath(os.path.join(DOCUMENTS_DIR, row["stored_name"]))
     if os.path.commonpath((os.path.abspath(DOCUMENTS_DIR), saved_path)) != os.path.abspath(DOCUMENTS_DIR):
         raise HTTPException(status_code=404, detail="Документ не найден")
@@ -1341,13 +1381,47 @@ def update_document(
         raise HTTPException(status_code=404, detail="Документ не найден")
     conn.commit()
     row = conn.execute(
-        "SELECT id, title, category, description, original_name, content_type, file_size, created_at "
-        "FROM documents WHERE id = ?",
+        f"SELECT {DOCUMENT_COLUMNS} FROM documents WHERE id = ?",
         (document_id,),
     ).fetchone()
     conn.close()
     append_audit(f"Тағйир дода шуд ҳуҷҷати «{title.strip()}»")
     return public_document(row)
+
+
+def review_document(document_id: str, new_status: str, authorization: str | None):
+    user = get_user_from_token(authorization)
+    if user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Только администратор может проверять документы")
+    conn = get_db()
+    row = conn.execute(
+        "SELECT title, status, owner_id FROM documents WHERE id = ?", (document_id,)
+    ).fetchone()
+    if row is None:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Документ не найден")
+    if row["status"] != "pending":
+        conn.close()
+        raise HTTPException(status_code=409, detail="Проверить можно только документ на рассмотрении")
+    conn.execute("UPDATE documents SET status = ? WHERE id = ?", (new_status, document_id))
+    conn.commit()
+    result = conn.execute(f"SELECT {DOCUMENT_COLUMNS} FROM documents WHERE id = ?", (document_id,)).fetchone()
+    conn.close()
+    verdict = "подтверждён" if new_status == "published" else "отклонён"
+    append_audit(f"Документ «{row['title']}» {verdict}")
+    if row["owner_id"]:
+        notify_users([row["owner_id"]], f"Ваш документ «{row['title']}» {verdict}")
+    return public_document(result)
+
+
+@app.post("/api/documents/{document_id}/approve")
+def approve_document(document_id: str, authorization: str | None = Header(default=None)):
+    return review_document(document_id, "published", authorization)
+
+
+@app.post("/api/documents/{document_id}/reject")
+def reject_document(document_id: str, authorization: str | None = Header(default=None)):
+    return review_document(document_id, "rejected", authorization)
 
 
 @app.delete("/api/documents/{document_id}")

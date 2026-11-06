@@ -9,11 +9,9 @@ import {
   BookOpenText,
   FileText,
   FolderKanban,
-  Images,
   LayoutDashboard,
   Newspaper,
   Settings2,
-  UsersRound,
 } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { getAdminSectionSnapshot, notifyAdminSectionChange, subscribeToAdminSection, type AdminSection } from "./admin-section";
@@ -40,14 +38,13 @@ const linksByRole = {
     { href: "/?adminSection=news", label: "Новости", icon: Newspaper },
     { href: "/documents", label: "Документы", icon: FileText },
     { href: "/services", label: "Услуги", icon: FolderKanban },
-    { href: "/architecture", label: "Команда", icon: UsersRound },
-    { href: "/architecture#history-gallery", label: "Галерея", icon: Images },
     { href: "/?adminSection=site-content", label: "Идоракунии сомона", icon: Settings2 },
   ],
   applicant: [
     { href: "#dashboard-top", label: "Моя панель", icon: LayoutDashboard },
     { href: "#certificate-list", label: "Мои заявки", icon: BadgeCheck },
     { href: "#application-form", label: "Новая заявка", icon: FileText },
+    { href: "#document-requests", label: "Мои документы", icon: BookOpenText },
     { href: "/services", label: "Услуги", icon: FolderKanban },
     { href: "/documents", label: "Документы", icon: BookOpenText },
     { href: "/news", label: "Новости", icon: Newspaper },

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { API_BASE } from "./api-config";
+import DocumentRequests from "./document-requests";
 import SiteNavigation from "./site-navigation";
 import SiteFooter from "./site-footer";
 import DashboardSidebar from "./dashboard-sidebar";
@@ -2177,6 +2178,8 @@ export default function Home() {
             onPageChange={(_, page) => setCertificatePage(page)}
           />
         </Paper>}
+
+        {(isApplicant || isAdminApplications) && <DocumentRequests role={isApplicant ? "applicant" : "admin"} />}
 
         {isAdminApplications && <Paper className="registry-audit" sx={{ mt: 3, p: 3, borderRadius: 4, border: "1px solid #dfeaf7" }}>
           <Stack direction="row" sx={{ alignItems: "center", gap: 1, mb: 2 }}>
