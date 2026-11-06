@@ -1,0 +1,1997 @@
+.architecture-site {
+  --portal-ink: #122b45;
+  --portal-deep: #103c68;
+  --portal-green: #1768a6;
+  --portal-gold: #e6a845;
+  --portal-muted: #607387;
+  --portal-line: #dce6ef;
+  color: var(--portal-ink);
+  background: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.portal-container {
+  width: min(1240px, calc(100% - 56px));
+}
+
+.portal-ribbon {
+  color: #eaf3fb;
+  background: #103c68;
+}
+
+.portal-header {
+  border-bottom-color: #e5edf3;
+  box-shadow: 0 5px 20px rgb(26 56 85 / 4%);
+}
+
+.portal-header__inner {
+  min-height: 82px;
+  gap: clamp(14px, 2vw, 28px);
+}
+
+.portal-brand {
+  flex-basis: 340px;
+}
+
+.portal-nav {
+  gap: clamp(12px, 1.65vw, 24px);
+  color: #344f68;
+}
+
+.portal-nav a:hover,
+.portal-inline-link:hover,
+.portal-service-card a:hover {
+  color: #147fb4;
+}
+
+.portal-header__registry {
+  border-radius: 8px;
+  background: #1768a6;
+  box-shadow: 0 7px 16px rgb(23 104 166 / 18%);
+}
+
+.portal-hero {
+  color: #122b45;
+  background:
+    radial-gradient(ellipse at 2% 5%, rgb(34 135 183 / 9%), transparent 34%),
+    linear-gradient(115deg, #f3f8fc 0%, #fff 54%, #eef6f7 100%);
+}
+
+.portal-hero__grid {
+  opacity: 0.24;
+  background-image:
+    linear-gradient(rgb(35 102 145 / 8%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(35 102 145 / 8%) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(90deg, black, transparent 62%);
+}
+
+.portal-hero__content {
+  min-height: 575px;
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+  gap: clamp(32px, 5vw, 76px);
+  padding-top: 54px;
+  padding-bottom: 48px;
+}
+
+.portal-hero__copy {
+  max-width: 700px;
+}
+
+.portal-eyebrow {
+  color: #1768a6;
+  letter-spacing: 0.12em;
+}
+
+.portal-eyebrow span {
+  width: 30px;
+  height: 2px;
+  background: #e6a845;
+}
+
+.portal-hero h1 {
+  max-width: 720px;
+  color: #122b45;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(42px, 5vw, 70px);
+  font-weight: 750;
+  line-height: 1.08;
+  letter-spacing: -0.055em;
+}
+
+.portal-hero h1 em {
+  color: #1677ad;
+  font-weight: 750;
+}
+
+.portal-hero__lead {
+  max-width: 560px;
+  color: #526b80;
+  font-size: 16px;
+}
+
+.portal-button {
+  border-radius: 9px;
+  font-size: 13px;
+}
+
+.portal-button--light {
+  color: #fff;
+  background: #1768a6;
+  box-shadow: 0 9px 22px rgb(23 104 166 / 20%);
+}
+
+.portal-button--light:hover {
+  background: #105788;
+}
+
+.portal-text-link {
+  color: #274c6c;
+}
+
+.portal-hero__note {
+  color: #62778a;
+}
+
+.portal-hero__note svg {
+  color: #1886a9;
+}
+
+.portal-hero__art {
+  width: 100%;
+  height: clamp(340px, 34vw, 440px);
+  align-self: center;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 90%);
+  border-radius: 24px;
+  background:
+    linear-gradient(0deg, rgb(10 35 58 / 55%), transparent 38%),
+    url("/company/page-08-image-03.webp") center 48% / cover no-repeat;
+  box-shadow: 0 26px 65px rgb(23 57 84 / 20%);
+  filter: none;
+}
+
+.portal-hero__art::before {
+  inset: 12px;
+  border: 1px solid rgb(255 255 255 / 48%);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgb(255 255 255 / 12%), transparent 50%);
+}
+
+.portal-hero__art::after {
+  display: none;
+}
+
+.portal-hero__art > :not(.portal-art-label) {
+  display: none;
+}
+
+.portal-art-label {
+  right: auto;
+  bottom: 28px;
+  left: 28px;
+  z-index: 3;
+  padding: 10px 14px;
+  border: 1px solid rgb(255 255 255 / 28%);
+  border-radius: 999px;
+  color: #fff;
+  background: rgb(10 35 58 / 45%);
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  backdrop-filter: blur(8px);
+}
+
+.portal-hero__bottom {
+  min-height: 56px;
+  border-top-color: #dbe6ed;
+  color: #607387;
+}
+
+.portal-hero__bottom a {
+  border-radius: 50%;
+  color: #1768a6;
+  background: #e6f0f7;
+  transform: rotate(90deg);
+}
+
+.portal-section {
+  padding: clamp(60px, 7vw, 92px) 0;
+}
+
+.portal-section h2,
+.portal-history__heading h3,
+.portal-history__gallery h3,
+.portal-gallery-section__heading h3,
+.portal-news__gallery h3 {
+  color: #122b45;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+
+.portal-kicker {
+  color: #1768a6;
+}
+
+.portal-areas,
+.portal-news {
+  background: #f3f7fa;
+}
+
+.portal-area-card,
+.portal-service-card,
+.portal-leader-card,
+.portal-news-feed,
+.portal-capability-card {
+  border-color: #e0e9f0;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgb(24 58 86 / 4%);
+}
+
+.portal-area-card,
+.portal-service-card {
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.portal-area-card:hover,
+.portal-service-card:hover {
+  transform: translateY(-4px);
+  border-color: #c3d9e8;
+  box-shadow: 0 16px 30px rgb(24 58 86 / 9%);
+}
+
+.portal-area-card__number,
+.portal-leader-card__copy > span,
+.portal-leader-card > span {
+  color: #1681a9;
+}
+
+.portal-area-card__rule {
+  border-radius: 999px;
+  background: #e6a845;
+}
+
+.portal-service-card__icon {
+  border-radius: 12px;
+  color: #1768a6;
+  background: #eaf3f9;
+}
+
+.portal-news__inner {
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+  gap: clamp(28px, 5vw, 68px);
+}
+
+.portal-news-feed {
+  border-color: #e0e9f0;
+  border-radius: 18px;
+  box-shadow: 0 16px 38px rgb(24 58 86 / 8%);
+}
+
+.portal-news-feed__heading {
+  border-color: #e9eff4;
+}
+
+.portal-news-feed__heading h3 {
+  color: #122b45;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+}
+
+.portal-news-feed__add,
+.portal-news-form__submit {
+  border-radius: 8px;
+  background: #1768a6;
+}
+
+.portal-news-feed__add:hover,
+.portal-news-form__submit:hover:not(:disabled) {
+  background: #105788;
+}
+
+.portal-news-card {
+  border-color: #e2eaf0;
+  border-radius: 12px;
+  box-shadow: 0 5px 14px rgb(24 58 86 / 4%);
+}
+
+.portal-news-card:hover {
+  border-color: #c3d9e8;
+  box-shadow: 0 12px 25px rgb(24 58 86 / 9%);
+}
+
+.portal-news-card__meta span {
+  color: #1768a6;
+  background: #eaf3f9;
+}
+
+.portal-news-card__read-more,
+.portal-news-card__admin-actions button {
+  border-color: #d7e5ef;
+  border-radius: 7px;
+  color: #1768a6;
+}
+
+.portal-news-card__read-more:hover,
+.portal-news-card__read-more:focus-visible {
+  border-color: #1768a6;
+  background: #1768a6;
+}
+
+.portal-news-card__read-more {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid #d7e5ef;
+  border-radius: 7px;
+  color: #1768a6;
+  background: #f5f9fc;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.portal-news-card__media {
+  margin: 0 0 14px;
+}
+
+.portal-news-card__media video,
+.portal-news-card__media img,
+.portal-news-detail__video {
+  width: 100%;
+  max-height: 480px;
+  display: block;
+  border-radius: 10px;
+  background: #eaf0f4;
+  object-fit: contain;
+}
+
+.portal-news-card__media figcaption,
+.portal-news-detail__media figcaption,
+.portal-photo-card__description {
+  margin: 8px 0 0;
+  color: #607387;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.portal-news-card__readers,
+.portal-news-detail__readers {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #607387;
+  font-size: 11px;
+}
+
+.portal-news-detail__readers {
+  margin: 22px 0 0;
+}
+
+.portal-news-detail__readers small {
+  color: #9c4a36;
+}
+
+.portal-news-detail__media {
+  max-width: 1000px;
+  margin: 20px 0;
+}
+
+.portal-news-detail__image {
+  border-radius: 12px;
+}
+
+.portal-photo-card__video {
+  width: 100%;
+  display: block;
+  aspect-ratio: 4 / 3;
+  background: #101f2a;
+  object-fit: contain;
+}
+
+.portal-photo-card__description {
+  padding: 0 14px 14px;
+}
+
+.portal-news-form__media-item {
+  display: grid;
+  grid-template-columns: minmax(90px, 160px) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #dce6ef;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.portal-news-form__media-item img,
+.portal-news-form__media-item video {
+  width: 100%;
+  max-height: 110px;
+  grid-row: span 2;
+  border-radius: 7px;
+  background: #eaf0f4;
+  object-fit: cover;
+}
+
+.portal-news-form__media-item input {
+  min-width: 0;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid #dce6ef;
+  border-radius: 7px;
+  font: inherit;
+  font-size: 12px;
+}
+
+.portal-news-form__remove-media {
+  width: 36px;
+  height: 36px;
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  border: 1px solid #f0d7d2;
+  border-radius: 8px;
+  color: #a63c32;
+  background: #fff;
+  cursor: pointer;
+}
+
+.portal-lightbox__image video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.portal-footer {
+  background: #103c68;
+}
+
+.architecture-site a:focus-visible,
+.architecture-site button:focus-visible {
+  outline-color: #e6a845;
+}
+
+@media (max-width: 1020px) {
+  .portal-container {
+    width: min(100% - 48px, 900px);
+  }
+
+  .portal-hero__content {
+    min-height: 500px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+    gap: 30px;
+  }
+
+  .portal-hero__art {
+    height: 360px;
+    transform: none;
+  }
+
+  .portal-news__inner {
+    grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+    gap: 28px;
+  }
+}
+
+@media (max-width: 720px) {
+  .portal-container {
+    width: min(100% - 32px, 540px);
+  }
+
+  .portal-header__inner {
+    min-height: 78px;
+    row-gap: 10px;
+  }
+
+  .portal-nav {
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 4px 0 8px;
+    white-space: nowrap;
+  }
+
+  .portal-hero__content {
+    min-height: auto;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding-top: 48px;
+    padding-bottom: 24px;
+  }
+
+  .portal-hero h1 {
+    font-size: clamp(40px, 10.5vw, 58px);
+  }
+
+  .portal-hero__lead {
+    font-size: 14px;
+  }
+
+  .portal-hero__art {
+    height: min(68vw, 360px);
+    min-height: 245px;
+    margin-top: 28px;
+  }
+
+  .portal-hero__bottom {
+    min-height: 50px;
+  }
+
+  .portal-news__inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (max-width: 560px) {
+  .portal-ribbon__inner {
+    gap: 12px;
+    font-size: 9px;
+  }
+
+  .portal-ribbon__actions {
+    gap: 10px;
+  }
+
+  .portal-ribbon__actions > a {
+    display: none;
+  }
+
+  .portal-section {
+    padding: 54px 0;
+  }
+
+  .portal-area-grid,
+  .portal-service-grid,
+  .portal-leadership-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .portal-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .portal-hero__art {
+    border-radius: 18px;
+  }
+
+  .portal-news-form__media-item {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .portal-news-form__media-item img,
+  .portal-news-form__media-item video {
+    max-height: 180px;
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+
+  .portal-news-form__remove-media {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-area-card,
+  .portal-service-card {
+    transition: none;
+  }
+}
+
+.portal-content-manager.MuiPaper-root {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid #e3eaf1;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 16px 42px rgb(24 58 86 / 8%);
+}
+
+.portal-content-manager.MuiPaper-root::before {
+  height: 4px;
+  position: absolute;
+  inset: 0 0 auto;
+  background: linear-gradient(90deg, #1768a6, #53a9b5 70%, #e6a845);
+  content: "";
+}
+
+.portal-content-manager > .MuiStack-root > .MuiBox-root > .MuiTypography-overline {
+  color: #4381b2;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.portal-content-manager > .MuiStack-root > .MuiBox-root > .MuiTypography-h6 {
+  margin: 3px 0 5px;
+  color: #16344e;
+  font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+  font-weight: 750;
+  letter-spacing: -0.025em;
+}
+
+.portal-content-manager > .MuiStack-root > .MuiBox-root > .MuiTypography-body2 {
+  max-width: 720px;
+  color: #72849a;
+  line-height: 1.65;
+}
+
+.portal-content-manager > .MuiStack-root > .MuiButton-root {
+  min-height: 43px;
+  padding-inline: 18px;
+  border-radius: 11px;
+  font-weight: 700;
+}
+
+.portal-content-manager__body {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #edf1f5;
+  animation: registry-admin-enter 260ms ease both;
+}
+
+.portal-content-manager__body > .MuiTextField-root .MuiOutlinedInput-root {
+  min-height: 49px;
+  border-radius: 12px;
+  background: #f9fbfd;
+}
+
+.portal-content-manager__item.MuiPaper-root {
+  padding: clamp(14px, 2vw, 21px);
+  border: 1px solid #e7edf3;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #fff, #fcfdff);
+  box-shadow: 0 4px 14px rgb(24 58 86 / 3%);
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.portal-content-manager__item.MuiPaper-root:hover {
+  transform: translateY(-1px);
+  border-color: #cfdeeb;
+  box-shadow: 0 9px 22px rgb(24 58 86 / 6%);
+}
+
+.portal-content-manager__item > .MuiStack-root:first-child {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f3f6;
+}
+
+.portal-content-manager__item > .MuiStack-root:first-child .MuiTypography-subtitle2 {
+  color: #284660;
+}
+
+.portal-content-manager__item > .MuiStack-root:first-child .MuiButton-root {
+  min-width: 34px;
+  border-radius: 9px;
+}
+
+.portal-content-manager__item > .MuiStack-root:first-child .MuiButton-colorError {
+  color: #b35353;
+  background: #fff7f6;
+}
+
+.portal-content-manager .MuiOutlinedInput-root {
+  border-radius: 11px;
+  background: #fff;
+}
+
+.portal-content-manager__body > .MuiStack-root:last-child .MuiButton-root {
+  min-height: 42px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.portal-media-source {
+  display: grid;
+  gap: 12px;
+  padding: 15px;
+  border: 1px solid #e3ebf2;
+  border-radius: 14px;
+  background: #f9fbfd;
+}
+
+.portal-media-source__switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.portal-media-source__switch .MuiButton-root {
+  min-height: 37px;
+  border-radius: 9px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: none;
+}
+
+.portal-media-source__switch .MuiButton-outlined {
+  border-color: #dce5ed;
+  color: #62778d;
+  background: #fff;
+}
+
+.portal-media-source__upload.MuiButton-root {
+  min-height: 52px;
+  justify-content: flex-start;
+  border: 1px dashed #b8cfe1;
+  border-radius: 11px;
+  color: #256d9f;
+  background: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: none;
+}
+
+.portal-media-source__preview {
+  display: grid;
+  grid-template-columns: minmax(100px, 180px) minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 9px;
+  border: 1px solid #e7edf3;
+  border-radius: 11px;
+  background: #fff;
+}
+
+.portal-media-source__preview img,
+.portal-media-source__preview video {
+  display: block;
+  width: 100%;
+  max-height: 125px;
+  border-radius: 8px;
+  background: #eaf0f4;
+  object-fit: cover;
+}
+
+.portal-media-source__preview .MuiTypography-root {
+  overflow: hidden;
+  color: #708197;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.portal-news-form {
+  gap: 14px;
+  padding: clamp(16px, 2.5vw, 24px);
+  border: 1px solid #e2eaf1;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #fff, #f8fbfe);
+  box-shadow: 0 12px 30px rgb(24 58 86 / 6%);
+}
+
+.portal-news-form__title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid #eaf0f5;
+}
+
+.portal-news-form__title-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  place-items: center;
+  border-radius: 13px;
+  color: #1768a6;
+  background: #eaf3f9;
+}
+
+.portal-news-form__title h4 {
+  color: #183750;
+  font-size: 1rem;
+}
+
+.portal-news-form__title p {
+  margin: 4px 0 0;
+  color: #7b8da1;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.portal-news-media-source {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid #e3ebf2;
+  border-radius: 14px;
+  background: #f9fbfd;
+}
+
+.portal-news-media-source__heading > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.portal-news-media-source__heading strong {
+  color: #23435e;
+  font-size: 0.85rem;
+}
+
+.portal-news-media-source__heading span,
+.portal-news-media-source__heading p,
+.portal-news-media-source__url > small {
+  color: #8292a4;
+  font-size: 0.72rem;
+}
+
+.portal-news-media-source__heading p {
+  margin: 5px 0 0;
+}
+
+.portal-news-media-source__tabs {
+  display: flex;
+  gap: 7px;
+}
+
+.portal-news-media-source__tabs button {
+  display: inline-flex;
+  min-height: 37px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
+  border: 1px solid #dfe7ef;
+  border-radius: 9px;
+  color: #667c92;
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: color 150ms ease, background 150ms ease, border-color 150ms ease;
+}
+
+.portal-news-media-source__tabs button.is-active {
+  border-color: #1768a6;
+  color: #fff;
+  background: #1768a6;
+}
+
+.portal-news-form__upload {
+  min-height: 72px;
+  justify-content: flex-start;
+  padding: 13px;
+  border: 1px dashed #b8cfe1;
+  border-radius: 11px;
+  color: #256d9f;
+  background: #fff;
+  font-size: 0.8rem;
+}
+
+.portal-news-form__upload span {
+  display: grid;
+  gap: 4px;
+}
+
+.portal-news-form__upload strong {
+  color: #315975;
+  font-size: 0.78rem;
+}
+
+.portal-news-form__upload small {
+  color: #8494a5;
+  font-size: 0.68rem;
+  font-weight: 400;
+}
+
+.portal-news-media-source__url-fields {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.25fr) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 9px;
+}
+
+.portal-news-media-source__url-fields label {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+  color: #607387;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.portal-news-media-source__url-fields input,
+.portal-news-media-source__url-fields select {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid #dce5ed;
+  border-radius: 9px;
+  color: #263d53;
+  background: #fff;
+  font: inherit;
+  font-size: 0.76rem;
+}
+
+.portal-news-media-source__url-fields button {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 9px;
+  color: #fff;
+  background: #1768a6;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.73rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.portal-news-media-source__url > small {
+  display: block;
+  margin-top: 8px;
+}
+
+@media (max-width: 620px) {
+  .portal-news-media-source__url-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .portal-news-media-source__url-fields button {
+    width: 100%;
+  }
+
+  .portal-news-form__media-item {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .portal-news-form__media-item img,
+  .portal-news-form__media-item video {
+    max-height: 180px;
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+
+  .portal-news-form__remove-media {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-content-manager__body,
+  .portal-content-manager__item,
+  .portal-news-media-source__tabs button {
+    animation: none;
+    transition: none;
+  }
+}
+
+.architecture-site {
+  --portal-ink: #173c36;
+  --portal-deep: #143c38;
+  --portal-green: #1d7665;
+  --portal-gold: #c99d50;
+  --portal-muted: #637671;
+  --portal-line: #dfe9e2;
+  color: var(--portal-ink);
+  background: #f7f9f6;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+.portal-section-nav {
+  position: sticky;
+  z-index: 18;
+  top: 84px;
+  border-bottom: 1px solid #e2eae3;
+  background: rgba(248, 250, 247, 0.94);
+  backdrop-filter: blur(12px);
+}
+
+.portal-section-nav__inner {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 2.4vw, 30px);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.portal-section-nav__inner::-webkit-scrollbar {
+  display: none;
+}
+
+.portal-section-nav a {
+  flex: 0 0 auto;
+  color: #536b60;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.portal-section-nav a:hover {
+  color: var(--portal-green);
+}
+
+.architecture-site .portal-ribbon {
+  color: #e8f0e9;
+  background: #143c38;
+}
+
+.architecture-site .portal-hero {
+  background:
+    radial-gradient(ellipse at 6% 8%, rgba(47, 126, 91, 0.11), transparent 35%),
+    linear-gradient(115deg, #f2f7f1 0%, #fff 54%, #eff5ed 100%);
+}
+
+.architecture-site .portal-hero h1 {
+  color: #173c36;
+}
+
+.architecture-site .portal-hero h1 em,
+.architecture-site .portal-eyebrow,
+.architecture-site .portal-kicker {
+  color: var(--portal-green);
+}
+
+.architecture-site .portal-button--light,
+.architecture-site .portal-header__registry,
+.architecture-site .portal-news-feed__add,
+.architecture-site .portal-news-form__submit {
+  background: var(--portal-green);
+}
+
+.architecture-site .portal-button--light:hover,
+.architecture-site .portal-header__registry:hover,
+.architecture-site .portal-news-feed__add:hover,
+.architecture-site .portal-news-form__submit:hover:not(:disabled) {
+  background: #15574b;
+}
+
+.architecture-site .portal-areas,
+.architecture-site .portal-news {
+  background: #eff4ef;
+}
+
+.architecture-site .portal-area-card,
+.architecture-site .portal-service-card,
+.architecture-site .portal-leader-card,
+.architecture-site .portal-news-feed,
+.architecture-site .portal-capability-card {
+  border-color: #dfe9e2;
+  border-radius: 18px;
+  box-shadow: 0 12px 32px rgba(26, 56, 48, 0.055);
+}
+
+.architecture-site .portal-area-card:hover,
+.architecture-site .portal-service-card:hover {
+  border-color: #c4d9ca;
+  box-shadow: 0 18px 38px rgba(26, 56, 48, 0.1);
+}
+
+.architecture-site .portal-area-card__number,
+.architecture-site .portal-leader-card__copy > span,
+.architecture-site .portal-leader-card > span {
+  color: var(--portal-green);
+}
+
+.architecture-site .portal-area-card__rule {
+  background: var(--portal-gold);
+}
+
+.architecture-site .portal-service-card__icon {
+  color: var(--portal-green);
+  background: #eaf3eb;
+}
+
+.architecture-site .portal-news-card__meta span {
+  color: #15574b;
+  background: #eaf3eb;
+}
+
+.architecture-site .portal-news-card__read-more,
+.architecture-site .portal-news-card__admin-actions button {
+  border-color: #d4e1d7;
+  color: var(--portal-green);
+  background: #f6f9f5;
+}
+
+.architecture-site .portal-news-card__read-more:hover,
+.architecture-site .portal-news-card__read-more:focus-visible {
+  border-color: var(--portal-green);
+  color: #fff;
+  background: var(--portal-green);
+}
+
+.architecture-site .portal-footer {
+  background: #143c38;
+}
+
+.architecture-site a:focus-visible,
+.architecture-site button:focus-visible {
+  outline-color: var(--portal-gold);
+  outline-offset: 3px;
+}
+
+.portal-content-manager.MuiPaper-root {
+  border-color: #dfe9e2;
+  box-shadow: 0 16px 42px rgba(26, 56, 48, 0.08);
+}
+
+.portal-content-manager.MuiPaper-root::before {
+  background: linear-gradient(90deg, #1d7665, #83ae80 70%, #c99d50);
+}
+
+.portal-content-manager__item.MuiPaper-root:hover {
+  border-color: #c4d9ca;
+}
+
+.portal-news-form__title-icon {
+  color: #1d7665;
+  background: #eaf3eb;
+}
+
+.portal-news-detail__title {
+  color: #173c36;
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  letter-spacing: -0.045em;
+}
+
+.portal-news-detail__content {
+  max-width: 820px;
+  color: #405a50;
+  font-size: 16px;
+  line-height: 1.9;
+}
+
+@media (max-width: 900px) {
+  .portal-section-nav {
+    top: 158px;
+  }
+}
+
+@media (max-width: 720px) {
+  .portal-section-nav {
+    top: 198px;
+  }
+
+  .portal-section-nav__inner {
+    min-height: 42px;
+    gap: 18px;
+  }
+}
+
+@media (max-width: 560px) {
+  .portal-section-nav {
+    top: 208px;
+  }
+
+  .portal-news-detail__content {
+    font-size: 15px;
+  }
+}
+
+.architecture-site {
+  --portal-ink: #102b4b;
+  --portal-deep: #081d35;
+  --portal-green: #174f83;
+  --portal-gold: #eab650;
+  --portal-muted: #60738b;
+  --portal-line: #dce5ef;
+  color: var(--portal-ink);
+  background: #f3f6fb;
+}
+
+.architecture-site .portal-ribbon {
+  color: #dbe5f0;
+  background: #081d35;
+}
+
+.architecture-site .portal-hero {
+  position: relative;
+  overflow: hidden;
+  color: #f5f7fb;
+  background: #0b2747;
+}
+
+.architecture-site .portal-hero__grid {
+  z-index: 1;
+  opacity: 0.12;
+  background-image:
+    linear-gradient(rgba(230, 239, 249, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(230, 239, 249, 0.18) 1px, transparent 1px);
+}
+
+.architecture-site .portal-container.portal-hero__content {
+  position: relative;
+  z-index: 2;
+  display: block;
+  min-height: clamp(470px, 53vw, 650px);
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.architecture-site .portal-hero__copy {
+  width: min(54%, 620px);
+  max-width: 620px;
+  min-height: inherit;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 0;
+}
+
+.architecture-site .portal-hero__art {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  left: calc(50% - 50vw);
+  width: 100vw;
+  right: auto;
+  height: 100%;
+  align-self: auto;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background:
+    linear-gradient(90deg, rgba(7, 27, 50, 0.96) 0%, rgba(7, 27, 50, 0.82) 34%, rgba(7, 27, 50, 0.24) 72%, rgba(7, 27, 50, 0.06) 100%),
+    linear-gradient(0deg, rgba(7, 27, 50, 0.28), transparent 40%),
+    url("/company/page-08-image-03.webp") center 48% / cover no-repeat;
+  box-shadow: none;
+}
+
+.architecture-site .portal-hero__art::before {
+  display: none;
+}
+
+.architecture-site .portal-hero__art > :not(.portal-art-label) {
+  display: none;
+}
+
+.architecture-site .portal-art-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 11px 15px;
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #fff;
+  background: rgba(8, 29, 53, 0.68);
+}
+
+.architecture-site .portal-eyebrow,
+.architecture-site .portal-kicker {
+  color: #eab650;
+}
+
+.architecture-site .portal-hero h1 {
+  color: #fff;
+  font-size: clamp(42px, 5.1vw, 72px);
+  line-height: 1.04;
+}
+
+.architecture-site .portal-hero h1 em {
+  color: #f0bf5c;
+}
+
+.architecture-site .portal-hero__lead,
+.architecture-site .portal-hero__note {
+  color: #d4dfeb;
+}
+
+.architecture-site .portal-hero__note svg {
+  color: #f0bf5c;
+}
+
+.architecture-site .portal-button--light {
+  border-radius: 999px;
+  color: #102b4b;
+  background: #efbd5b;
+}
+
+.architecture-site .portal-button--light:hover {
+  color: #102b4b;
+  background: #ffd47c;
+}
+
+.architecture-site .portal-text-link {
+  color: #f5f7fb;
+}
+
+.architecture-site .portal-hero__bottom {
+  z-index: 2;
+  border-top-color: rgba(255, 255, 255, 0.18);
+  color: #d4dfeb;
+}
+
+.architecture-site .portal-hero__bottom a {
+  color: #102b4b;
+  background: #efbd5b;
+}
+
+.portal-section-nav {
+  z-index: 18;
+  border-color: #dce5ef;
+  background: rgba(247, 249, 252, 0.96);
+}
+
+.portal-section-nav a {
+  color: #536a82;
+}
+
+.portal-section-nav a:hover {
+  color: #174f83;
+}
+
+.portal-quick-links {
+  position: relative;
+  z-index: 3;
+  margin-top: -22px;
+}
+
+.portal-quick-links__inner {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid #e0e8f1;
+  border-radius: 17px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 16px 38px rgba(13, 42, 75, 0.13);
+}
+
+.portal-quick-link {
+  min-width: 0;
+  min-height: 76px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  color: #15385e;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+  text-decoration: none;
+  transition: color 160ms ease, background 160ms ease;
+}
+
+.portal-quick-link + .portal-quick-link {
+  border-left: 1px solid #e3eaf2;
+}
+
+.portal-quick-link > svg:first-child {
+  color: #1a5489;
+}
+
+.portal-quick-link > svg:last-child {
+  color: #a4b1bf;
+}
+
+.portal-quick-link:hover {
+  color: #102b4b;
+  background: #f4f7fb;
+}
+
+.portal-quick-link:hover > svg:last-child {
+  color: #c28f32;
+}
+
+.architecture-site .portal-intro,
+.architecture-site .portal-services,
+.architecture-site .portal-contact {
+  background: #f8fafd;
+}
+
+.architecture-site .portal-areas,
+.architecture-site .portal-news {
+  background: #edf2f8;
+}
+
+.architecture-site .portal-area-card,
+.architecture-site .portal-service-card,
+.architecture-site .portal-leader-card,
+.architecture-site .portal-news-feed,
+.architecture-site .portal-capability-card {
+  border-color: #dce5ef;
+  border-radius: 16px;
+  box-shadow: 0 10px 28px rgba(19, 51, 84, 0.07);
+}
+
+.architecture-site .portal-area-card:hover,
+.architecture-site .portal-service-card:hover {
+  border-color: #c1d3e6;
+  box-shadow: 0 16px 34px rgba(19, 51, 84, 0.12);
+}
+
+.architecture-site .portal-area-card__number,
+.architecture-site .portal-leader-card__copy > span,
+.architecture-site .portal-leader-card > span {
+  color: #1d679e;
+}
+
+.architecture-site .portal-area-card__rule {
+  background: #eab650;
+}
+
+.architecture-site .portal-service-card__icon {
+  color: #174f83;
+  background: #eaf1f8;
+}
+
+.portal-institute-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 26px;
+}
+
+.portal-institute-fact {
+  min-height: 92px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-content: center;
+  align-items: center;
+  gap: 4px 13px;
+  padding: 16px 19px;
+  border: 1px solid #dce5ef;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(19, 51, 84, 0.05);
+}
+
+.portal-institute-fact strong {
+  grid-row: span 2;
+  color: #174f83;
+  font-size: clamp(23px, 3vw, 32px);
+  letter-spacing: -0.045em;
+}
+
+.portal-institute-fact span {
+  color: #60738b;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.portal-history__gallery {
+  padding: clamp(20px, 3.5vw, 36px);
+  border: 1px solid #dce5ef;
+  border-radius: 20px;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(230, 238, 247, 0.8), transparent 30rem),
+    #fff;
+  box-shadow: 0 14px 36px rgba(19, 51, 84, 0.07);
+}
+
+.portal-history__gallery h3 {
+  color: #102b4b;
+}
+
+.portal-photo-card {
+  border-color: #dce5ef;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(19, 51, 84, 0.07);
+}
+
+.portal-photo-card__image {
+  background: #eaf0f6;
+}
+
+.portal-photo-card figcaption {
+  color: #536a82;
+}
+
+.portal-photo-grid--carousel {
+  position: relative;
+  display: grid;
+  width: min(100%, 920px);
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid #dce5ef;
+  border-radius: 17px;
+  background: #0b1d32;
+  box-shadow: 0 18px 42px rgba(13, 36, 64, 0.13);
+}
+
+.portal-photo-grid--carousel .portal-photo-card--active {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  border-radius: 0;
+  background: #0b1d32;
+  animation: portal-carousel-image-in 560ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.portal-photo-grid--carousel .portal-photo-card__image {
+  width: 100%;
+  aspect-ratio: 16 / 8.5;
+  min-height: 240px;
+  max-height: 390px;
+  background: #0b1d32;
+}
+
+.portal-photo-grid--carousel .portal-photo-card--document .portal-photo-card__image,
+.portal-photo-grid--carousel .portal-photo-card--portrait .portal-photo-card__image,
+.portal-photo-grid--carousel .portal-photo-card--wide .portal-photo-card__image {
+  aspect-ratio: 16 / 8.5;
+  padding: 18px;
+  background: #0b1d32;
+}
+
+.portal-photo-grid--carousel .portal-photo-card--document .portal-photo-card__image img,
+.portal-photo-grid--carousel .portal-photo-card--portrait .portal-photo-card__image img,
+.portal-photo-grid--carousel .portal-photo-card--wide .portal-photo-card__image img {
+  object-fit: contain;
+}
+
+.portal-photo-grid--carousel .portal-photo-card__image img {
+  transition: transform 650ms cubic-bezier(0.2, 0.75, 0.25, 1), opacity 280ms ease;
+}
+
+.portal-photo-grid--carousel .portal-photo-card--active:hover .portal-photo-card__image img {
+  transform: scale(1.015);
+}
+
+.portal-photo-grid--carousel .portal-photo-card--active figcaption {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  padding: 52px 25px 22px;
+  color: #fff;
+  background: linear-gradient(0deg, rgba(5, 17, 31, 0.87), rgba(5, 17, 31, 0));
+  font-size: clamp(14px, 1.5vw, 18px);
+  font-weight: 650;
+  line-height: 1.5;
+  pointer-events: none;
+}
+
+.portal-photo-grid--carousel .portal-photo-card--active .portal-photo-card__description {
+  position: absolute;
+  z-index: 2;
+  right: 25px;
+  bottom: 23px;
+  max-width: 38%;
+  margin: 0;
+  color: rgba(240, 246, 255, 0.75);
+  font-size: 11px;
+  text-align: right;
+  pointer-events: none;
+}
+
+.portal-photo-grid--carousel .portal-photo-card__zoom {
+  right: 20px;
+  bottom: 22px;
+  z-index: 3;
+  opacity: 1;
+}
+
+.portal-photo-carousel-controls {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px 20px;
+  padding: 14px 18px 17px;
+  color: #e8eef7;
+  background: linear-gradient(110deg, #0b1d32, #112943);
+}
+
+.portal-photo-carousel-controls__caption {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.portal-photo-carousel-controls__caption span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.portal-photo-carousel-controls__caption small {
+  flex: 0 0 auto;
+  color: #e9bd62;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+}
+
+.portal-photo-carousel-controls__progress {
+  display: flex;
+  grid-column: 1 / -1;
+  gap: 4px;
+}
+
+.portal-photo-carousel-controls__progress span {
+  position: relative;
+  display: block;
+  height: 3px;
+  flex: 1 1 0;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgba(235, 242, 251, 0.18);
+}
+
+.portal-photo-carousel-controls__progress span.is-active {
+  background: rgba(235, 242, 251, 0.25);
+}
+
+.portal-photo-carousel-controls__progress span.is-active::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #e4ad43, #f3d37e);
+  content: "";
+  animation: portal-carousel-progress 5.2s linear both;
+  animation-play-state: var(--carousel-progress-state, running);
+}
+
+@keyframes portal-carousel-image-in {
+  from {
+    opacity: 0.72;
+    transform: scale(1.012);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes portal-carousel-progress {
+  from { transform: scaleX(0); transform-origin: left; }
+  to { transform: scaleX(1); transform-origin: left; }
+}
+
+@media (max-width: 720px) {
+  .portal-photo-grid--carousel {
+    border-radius: 13px;
+  }
+
+  .portal-photo-grid--carousel .portal-photo-card__image,
+  .portal-photo-grid--carousel .portal-photo-card--document .portal-photo-card__image,
+  .portal-photo-grid--carousel .portal-photo-card--portrait .portal-photo-card__image,
+  .portal-photo-grid--carousel .portal-photo-card--wide .portal-photo-card__image {
+    min-height: 230px;
+    aspect-ratio: 4 / 3;
+    padding: 10px;
+  }
+
+  .portal-photo-grid--carousel .portal-photo-card--active figcaption {
+    padding: 38px 15px 15px;
+    font-size: 13px;
+  }
+
+  .portal-photo-grid--carousel .portal-photo-card--active .portal-photo-card__description {
+    display: none;
+  }
+
+  .portal-photo-grid--carousel .portal-photo-card__zoom {
+    right: 12px;
+    bottom: 13px;
+  }
+
+  .portal-photo-carousel-controls {
+    gap: 10px;
+    padding: 12px 12px 14px;
+  }
+
+  .portal-photo-carousel-controls__caption {
+    gap: 8px;
+    font-size: 11px;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-photo-grid--carousel .portal-photo-card--active,
+  .portal-photo-carousel-controls__progress span.is-active::after {
+    animation: none !important;
+  }
+
+  .portal-photo-grid--carousel .portal-photo-card__image img {
+    transition: none;
+  }
+}
+
+.portal-leader-card {
+  border-color: #dce5ef;
+  border-radius: 15px;
+  box-shadow: 0 10px 26px rgba(19, 51, 84, 0.07);
+}
+
+.architecture-site .portal-news-card__meta span {
+  color: #174f83;
+  background: #eaf1f8;
+}
+
+.architecture-site .portal-news-card__read-more,
+.architecture-site .portal-news-card__admin-actions button {
+  border-color: #d4e0ec;
+  color: #174f83;
+  background: #f6f9fc;
+}
+
+.architecture-site .portal-news-card__read-more:hover,
+.architecture-site .portal-news-card__read-more:focus-visible {
+  border-color: #174f83;
+  color: #fff;
+  background: #174f83;
+}
+
+.architecture-site .portal-footer {
+  background:
+    radial-gradient(ellipse at 88% 0%, rgba(39, 86, 132, 0.3), transparent 28rem),
+    #081d35;
+}
+
+.portal-lightbox {
+  z-index: 2000;
+  padding: 68px clamp(56px, 9vw, 120px) 76px;
+  overflow: hidden;
+  background: rgba(5, 17, 32, 0.96);
+  backdrop-filter: blur(12px);
+  cursor: default;
+  animation: portal-lightbox-fade-in 150ms ease-out both;
+}
+
+.portal-lightbox__topbar {
+  position: absolute;
+  z-index: 2;
+  top: 18px;
+  right: 22px;
+  left: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.portal-lightbox__count {
+  padding: 9px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  color: #e3eaf3;
+  background: rgba(14, 37, 64, 0.76);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.portal-lightbox__figure {
+  width: min(100%, 1160px);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.portal-lightbox__image {
+  width: 100%;
+  height: min(76dvh, 850px);
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  background:
+    radial-gradient(ellipse at center, #18385a, #091a2e 75%);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.4);
+}
+
+.portal-lightbox__image img {
+  object-fit: contain;
+  object-position: center;
+  animation: portal-lightbox-image-in 180ms ease-out both;
+}
+
+.portal-lightbox__image video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.portal-lightbox__figure figcaption {
+  max-width: min(100%, 760px);
+  align-self: center;
+  padding: 13px 20px 0;
+  color: #f3f6fa;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.portal-lightbox__close,
+.portal-lightbox__previous,
+.portal-lightbox__next {
+  z-index: 2;
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  color: #f7f8fb;
+  background: rgba(15, 39, 66, 0.82);
+  cursor: pointer;
+  transition: border-color 150ms ease, color 150ms ease, background 150ms ease, transform 150ms ease;
+}
+
+.portal-lightbox__close:hover,
+.portal-lightbox__previous:hover,
+.portal-lightbox__next:hover {
+  transform: translateY(-1px);
+  border-color: #efbd5b;
+  color: #102b4b;
+  background: #efbd5b;
+}
+
+.portal-lightbox__close {
+  position: static;
+}
+
+.portal-lightbox__previous,
+.portal-lightbox__next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.portal-lightbox__previous {
+  left: 22px;
+}
+
+.portal-lightbox__next {
+  right: 22px;
+}
+
+.portal-lightbox__previous:hover,
+.portal-lightbox__next:hover {
+  transform: translateY(calc(-50% - 1px));
+}
+
+.portal-lightbox__hint {
+  bottom: 20px;
+  color: #b6c4d5;
+  font-size: 11px;
+}
+
+.portal-lightbox__error {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  place-items: center;
+  color: #e7edf5;
+  font-size: 14px;
+  text-align: center;
+}
+
+.portal-lightbox button:focus-visible {
+  outline: 3px solid #efbd5b;
+  outline-offset: 3px;
+}
+
+@keyframes portal-lightbox-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes portal-lightbox-image-in {
+  from { opacity: 0.65; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 900px) {
+  .architecture-site .portal-container.portal-hero__content {
+    min-height: 530px;
+  }
+
+  .architecture-site .portal-hero__copy {
+    width: min(70%, 560px);
+  }
+
+  .architecture-site .portal-hero__art {
+    background-position: center, center, 58% center;
+  }
+}
+
+@media (max-width: 700px) {
+  .architecture-site .portal-container.portal-hero__content {
+    min-height: 560px;
+  }
+
+  .architecture-site .portal-hero__copy {
+    width: 100%;
+    padding: 52px 0 42px;
+  }
+
+  .architecture-site .portal-hero__art {
+    background:
+      linear-gradient(90deg, rgba(7, 27, 50, 0.91), rgba(7, 27, 50, 0.52)),
+      linear-gradient(0deg, rgba(7, 27, 50, 0.26), transparent 50%),
+      url("/company/page-08-image-03.webp") center / cover no-repeat;
+  }
+
+  .portal-quick-links__inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .portal-quick-link {
+    min-height: 68px;
+    padding: 10px 12px;
+    font-size: 11px;
+  }
+
+  .portal-quick-link:nth-child(3) {
+    border-left: 0;
+  }
+
+  .portal-quick-link:nth-child(n + 3) {
+    border-top: 1px solid #e3eaf2;
+  }
+
+  .portal-institute-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-institute-fact {
+    min-height: 74px;
+  }
+
+  .portal-lightbox {
+    padding: 76px 14px 80px;
+  }
+
+  .portal-lightbox__topbar {
+    top: 12px;
+    right: 14px;
+    left: 14px;
+  }
+
+  .portal-lightbox__image {
+    height: min(72dvh, 760px);
+    border-radius: 10px;
+  }
+
+  .portal-lightbox__previous,
+  .portal-lightbox__next {
+    top: auto;
+    bottom: 19px;
+    width: 42px;
+    height: 42px;
+    transform: none;
+  }
+
+  .portal-lightbox__previous {
+    left: 18px;
+  }
+
+  .portal-lightbox__next {
+    right: 18px;
+  }
+
+  .portal-lightbox__previous:hover,
+  .portal-lightbox__next:hover {
+    transform: translateY(-1px);
+  }
+
+  .portal-lightbox__hint {
+    bottom: 29px;
+    max-width: calc(100% - 138px);
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-lightbox,
+  .portal-lightbox__image img {
+    animation: none;
+  }
+}
