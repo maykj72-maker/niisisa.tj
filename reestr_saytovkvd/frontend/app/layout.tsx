@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { MotionConfig } from "framer-motion";
 import "./globals.css";
+import IntroVideo from "./intro-video";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       suppressHydrationWarning
     >
       <body className="min-h-full">
+        <IntroVideo />
         <MotionConfig reducedMotion="user">{children}</MotionConfig>
       </body>
     </html>
