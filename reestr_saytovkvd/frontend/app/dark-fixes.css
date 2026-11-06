@@ -1,0 +1,101 @@
+/* Dark theme: make sure MUI components keep readable text on dark surfaces. */
+html[data-theme="dark"] .MuiButton-outlined:not(.MuiButton-colorError):not(.MuiButton-colorSuccess):not(.MuiButton-colorWarning) {
+  color: #d6e6ff;
+  border-color: rgba(214, 230, 255, 0.35);
+}
+
+html[data-theme="dark"] .MuiButton-outlined:not(.MuiButton-colorError):not(.MuiButton-colorSuccess):not(.MuiButton-colorWarning):hover {
+  background: rgba(214, 230, 255, 0.08);
+  border-color: rgba(214, 230, 255, 0.6);
+}
+
+html[data-theme="dark"] .MuiButton-outlined.MuiButton-colorError {
+  color: #ffb4b4;
+  border-color: rgba(255, 180, 180, 0.45);
+}
+
+html[data-theme="dark"] .MuiButton-text:not(.MuiButton-colorError):not(.MuiButton-colorSuccess) {
+  color: #bcd7ff;
+}
+
+html[data-theme="dark"] .MuiButton-text.MuiButton-colorError {
+  color: #ffb4b4;
+}
+
+html[data-theme="dark"] .MuiChip-outlined,
+html[data-theme="dark"] .MuiChip-root:not(.MuiChip-filled):not(.MuiChip-colorSuccess):not(.MuiChip-colorWarning):not(.MuiChip-colorError) .MuiChip-label {
+  color: #e6eef8;
+}
+
+html[data-theme="dark"] .MuiChip-outlined.MuiChip-colorWarning {
+  color: #ffd98a;
+  border-color: rgba(255, 217, 138, 0.55);
+}
+
+html[data-theme="dark"] .MuiFormHelperText-root,
+html[data-theme="dark"] .MuiTablePagination-root,
+html[data-theme="dark"] .MuiTablePagination-displayedRows,
+html[data-theme="dark"] .MuiTablePagination-selectLabel {
+  color: #b8c7d8;
+}
+
+html[data-theme="dark"] .MuiTablePagination-root .MuiIconButton-root {
+  color: #d6e6ff;
+}
+
+html[data-theme="dark"] .MuiTablePagination-root .MuiIconButton-root.Mui-disabled {
+  color: rgba(214, 230, 255, 0.3);
+}
+
+html[data-theme="dark"] .MuiTypography-colorTextSecondary,
+html[data-theme="dark"] .MuiTypography-root.MuiTypography-body2.MuiTypography-colorTextSecondary {
+  color: #b8c7d8;
+}
+
+html[data-theme="dark"] .MuiInputBase-input,
+html[data-theme="dark"] .MuiSelect-select {
+  color: #eef4fb;
+}
+
+html[data-theme="dark"] .MuiInputLabel-root {
+  color: #a9bace;
+}
+
+html[data-theme="dark"] .MuiSvgIcon-root.MuiSelect-icon {
+  color: #b8c7d8;
+}
+
+/* Active header link and disabled buttons */
+html[data-theme="dark"] .unified-site-header .unified-site-nav__link[aria-current="page"],
+html[data-theme="dark"] .utility-page__main .unified-site-nav__link[aria-current="page"],
+html[data-theme="dark"] .registry-dashboard-main .unified-site-nav__link[aria-current="page"] {
+  color: #1b1200;
+  background: linear-gradient(135deg, #f4cf74, #d9a23a);
+  border-color: transparent;
+}
+
+html[data-theme="dark"] .unified-site-header .unified-site-nav__link[aria-current="page"] svg,
+html[data-theme="dark"] .unified-site-header .unified-site-nav__link[aria-current="page"] span {
+  color: #1b1200;
+}
+
+html[data-theme="dark"] .MuiButton-root.Mui-disabled {
+  color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .MuiButton-outlined.MuiButton-colorWarning,
+html[data-theme="dark"] .MuiButton-text.MuiButton-colorWarning {
+  color: #ffd98a;
+  border-color: rgba(255, 217, 138, 0.5);
+}
+
+html[data-theme="dark"] .MuiButton-outlined.MuiButton-colorSuccess,
+html[data-theme="dark"] .MuiButton-text.MuiButton-colorSuccess {
+  color: #8be0b4;
+  border-color: rgba(139, 224, 180, 0.5);
+}
+
+html[data-theme="dark"] .MuiSvgIcon-colorDisabled {
+  color: rgba(255, 255, 255, 0.38);
+}
