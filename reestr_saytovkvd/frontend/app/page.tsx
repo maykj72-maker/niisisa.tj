@@ -9,6 +9,7 @@ import SiteNavigation from "./site-navigation";
 import SiteFooter from "./site-footer";
 import DashboardSidebar from "./dashboard-sidebar";
 import AdminSiteContent from "./admin-site-content";
+import { useTr } from "./i18n";
 import {
   getAdminSectionSnapshot,
   notifyAdminSectionChange,
@@ -252,11 +253,18 @@ const statusLabels: Record<Status, string> = {
   rejected: "Отклонена",
 };
 
+const statusLabelsTg: Record<Status, string> = {
+  pending: "Дар баррасӣ",
+  published: "Нашр шудааст",
+  revoked: "Бекор карда шудааст",
+  rejected: "Рад карда шудааст",
+};
+
 const companyHighlights = [
-  { title: "О нас", text: "Пажӯҳишгоҳи илмию тадқиқотии сохтмон ва меъморӣ — научно-исследовательский центр по строительству, архитектуре, проектированию и технической экспертизе." },
-  { title: "Лаборатория", text: "В составе центра действует лаборатория испытаний материалов, контроль качества и технической диагностики объектов." },
-  { title: "Реестры", text: "Проводится электронный учёт аттестации, сертификатов, квалификации специалистов и проверок качества." },
-  { title: "Поддержка", text: "Для заявителей и организаций предусмотрены консультации, регистрация и проверка документов в едином порядке." },
+  { tg: { title: "Дар бораи мо", text: "Пажӯҳишгоҳи илмию тадқиқотии сохтмон ва меъморӣ — маркази илмию тадқиқотӣ оид ба сохтмон, меъморӣ, тарҳрезӣ ва экспертизаи техникӣ." }, title: "О нас", text: "Пажӯҳишгоҳи илмию тадқиқотии сохтмон ва меъморӣ — научно-исследовательский центр по строительству, архитектуре, проектированию и технической экспертизе." },
+  { tg: { title: "Озмоишгоҳ", text: "Дар ҳайати марказ озмоишгоҳи санҷиши маводҳо, назорати сифат ва ташхиси техникии объектҳо фаъолият мекунад." }, title: "Лаборатория", text: "В составе центра действует лаборатория испытаний материалов, контроль качества и технической диагностики объектов." },
+  { tg: { title: "Феҳристҳо", text: "Баҳисобгирии электронии аттестатсия, сертификатҳо, тахассуси мутахассисон ва санҷишҳои сифат ба роҳ монда шудааст." }, title: "Реестры", text: "Проводится электронный учёт аттестации, сертификатов, квалификации специалистов и проверок качества." },
+  { tg: { title: "Дастгирӣ", text: "Барои довталабон ва ташкилотҳо маслиҳат, бақайдгирӣ ва санҷиши ҳуҷҷатҳо дар тартиби ягона пешбинӣ шудааст." }, title: "Поддержка", text: "Для заявителей и организаций предусмотрены консультации, регистрация и проверка документов в едином порядке." },
 ];
 
 function normalizeCertificate(item: Record<string, unknown>): Certificate {
@@ -782,6 +790,7 @@ async function fetchAllFilteredCertificates(search: string, status: Status | "al
 }
 
 export default function Home() {
+  const tr = useTr();
   const router = useRouter();
   const auth = useSyncExternalStore(subscribeToAuth, getAuthSnapshot, () => null);
   const adminSection = useSyncExternalStore(
@@ -1324,11 +1333,11 @@ export default function Home() {
             <Paper className="registry-hero" sx={{ p: 3, mb: 3, borderRadius: 4, border: "1px solid #dfeaf7" }}>
               <Stack direction={{ xs: "column", md: "row" }} sx={{ justifyContent: "space-between", alignItems: { xs: "flex-start", md: "center" }, gap: 2 }}>
                 <Box>
-                  <Typography variant="overline" color="primary.main" sx={{ letterSpacing: 2, fontWeight: 700 }}>Единый государственный портал</Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 800, mb: 1 }}>Все сведения о реестре, лаборатории и сертификатах в одном месте</Typography>
-                  <Typography variant="body1" color="text.secondary">Любой посетитель может посмотреть опубликованные сертификаты, новости и информацию о деятельности центра без отдельного входа.</Typography>
+                  <Typography variant="overline" color="primary.main" sx={{ letterSpacing: 2, fontWeight: 700 }}>{tr("Единый государственный портал", "Портали ягонаи давлатӣ")}</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 800, mb: 1 }}>{tr("Все сведения о реестре, лаборатории и сертификатах в одном месте", "Тамоми маълумот дар бораи феҳрист, озмоишгоҳ ва сертификатҳо дар як ҷо")}</Typography>
+                  <Typography variant="body1" color="text.secondary">{tr("Любой посетитель может посмотреть опубликованные сертификаты, новости и информацию о деятельности центра без отдельного входа.", "Ҳар як меҳмон метавонад сертификатҳои нашршуда, ахбор ва маълумот дар бораи фаъолияти марказро бидуни воридшавии алоҳида бубинад.")}</Typography>
                 </Box>
-                <Chip label="Открытый доступ" color="success" variant="filled" sx={{ fontWeight: 700 }} />
+                <Chip label={tr("Открытый доступ", "Дастрасии кушод")} color="success" variant="filled" sx={{ fontWeight: 700 }} />
               </Stack>
             </Paper>
           </motion.div>
@@ -1336,7 +1345,7 @@ export default function Home() {
           <Grid className="registry-auth-grid" container spacing={3} sx={{ mb: 3 }}>
             <Grid size={{ xs: 12 }}>
               <Box className="registry-auth-panel registry-auth-card">
-                <Stack direction="row" spacing={1} sx={{ mb: 3 }} role="tablist" aria-label="Вход или регистрация">
+                <Stack direction="row" spacing={1} sx={{ mb: 3 }} role="tablist" aria-label={tr("Вход или регистрация", "Воридшавӣ ё бақайдгирӣ")}>
                   <Button
                     className="registry-auth-tab"
                     type="button"
@@ -1350,7 +1359,7 @@ export default function Home() {
                       setShowPassword(false);
                     }}
                   >
-                    Войти
+                    {tr("Войти", "Ворид шудан")}
                   </Button>
                   <Button
                     className="registry-auth-tab"
@@ -1365,20 +1374,20 @@ export default function Home() {
                       setShowPassword(false);
                     }}
                   >
-                    Регистрация
+                    {tr("Регистрация", "Бақайдгирӣ")}
                   </Button>
                 </Stack>
 
                 {authMode === "login" ? (
                   <>
-                    <Typography className="registry-auth-title" variant="h5">С возвращением</Typography>
-                    <Typography className="registry-auth-subtitle">Войдите в личный кабинет</Typography>
+                    <Typography className="registry-auth-title" variant="h5">{tr("С возвращением", "Хуш омадед")}</Typography>
+                    <Typography className="registry-auth-subtitle">{tr("Войдите в личный кабинет", "Ба кабинети шахсӣ ворид шавед")}</Typography>
                     <form onSubmit={handleLogin}>
                       <Stack spacing={2}>
-                        <TextField required label="Код пользователя или администратора" value={loginCode} onChange={(e) => setLoginCode(e.target.value)} autoComplete="username" fullWidth slotProps={{ htmlInput: { minLength: 3, maxLength: 80, autoComplete: "username" }, input: { startAdornment: <InputAdornment position="start"><Badge /></InputAdornment> } }} />
+                        <TextField required label={tr("Код пользователя или администратора", "Рамзи корбар ё маъмур")} value={loginCode} onChange={(e) => setLoginCode(e.target.value)} autoComplete="username" fullWidth slotProps={{ htmlInput: { minLength: 3, maxLength: 80, autoComplete: "username" }, input: { startAdornment: <InputAdornment position="start"><Badge /></InputAdornment> } }} />
                         <TextField
                           required
-                          label="Пароль"
+                          label={tr("Пароль", "Рамз")}
                           type={showPassword ? "text" : "password"}
                           value={loginPassword}
                           onChange={(e) => setLoginPassword(e.target.value)}
@@ -1391,7 +1400,7 @@ export default function Home() {
                               endAdornment: (
                                 <InputAdornment position="end">
                                   <IconButton
-                                    aria-label={showPassword ? "Скрыть пароль" : "Показать пароль"}
+                                    aria-label={showPassword ? tr("Скрыть пароль", "Пинҳон кардани рамз") : tr("Показать пароль", "Нишон додани рамз")}
                                     aria-pressed={showPassword}
                                     onClick={() => setShowPassword((shown) => !shown)}
                                     edge="end"
@@ -1405,22 +1414,22 @@ export default function Home() {
                         />
                         {loginError && <Alert severity="error">{loginError}</Alert>}
                         <Button type="submit" variant="contained" size="large" disabled={loadingLogin} aria-busy={loadingLogin}>
-                          {loadingLogin ? "Вход..." : "Войти"}
+                          {loadingLogin ? tr("Вход...", "Воридшавӣ...") : tr("Войти", "Ворид шудан")}
                         </Button>
                       </Stack>
                     </form>
                   </>
                 ) : (
                   <>
-                    <Typography className="registry-auth-title" variant="h5">Создать аккаунт</Typography>
-                    <Typography className="registry-auth-subtitle">Зарегистрируйтесь как заявитель</Typography>
+                    <Typography className="registry-auth-title" variant="h5">{tr("Создать аккаунт", "Сохтани ҳисоб")}</Typography>
+                    <Typography className="registry-auth-subtitle">{tr("Зарегистрируйтесь как заявитель", "Ҳамчун довталаб бақайд шавед")}</Typography>
                     <form onSubmit={handleRegister}>
                       <Stack spacing={2}>
-                        <TextField required label="ФИО" value={registerName} onChange={(e) => setRegisterName(e.target.value)} autoComplete="name" fullWidth slotProps={{ htmlInput: { minLength: 3, maxLength: 160, autoComplete: "name" } }} />
-                        <TextField required label="Придумайте код" value={registerCode} onChange={(e) => setRegisterCode(e.target.value)} autoComplete="username" fullWidth slotProps={{ htmlInput: { minLength: 3, maxLength: 80, autoComplete: "username" } }} />
+                        <TextField required label={tr("ФИО", "Ному насаб")} value={registerName} onChange={(e) => setRegisterName(e.target.value)} autoComplete="name" fullWidth slotProps={{ htmlInput: { minLength: 3, maxLength: 160, autoComplete: "name" } }} />
+                        <TextField required label={tr("Придумайте код", "Рамзи худро ихтироъ кунед")} value={registerCode} onChange={(e) => setRegisterCode(e.target.value)} autoComplete="username" fullWidth slotProps={{ htmlInput: { minLength: 3, maxLength: 80, autoComplete: "username" } }} />
                         <TextField
                           required
-                          label="Пароль (не менее 12 символов)"
+                          label={tr("Пароль (не менее 12 символов)", "Рамз (на камтар аз 12 аломат)")}
                           type={showPassword ? "text" : "password"}
                           value={registerPassword}
                           onChange={(e) => setRegisterPassword(e.target.value)}
@@ -1433,7 +1442,7 @@ export default function Home() {
                               endAdornment: (
                                 <InputAdornment position="end">
                                   <IconButton
-                                    aria-label={showPassword ? "Скрыть пароль" : "Показать пароль"}
+                                    aria-label={showPassword ? tr("Скрыть пароль", "Пинҳон кардани рамз") : tr("Показать пароль", "Нишон додани рамз")}
                                     aria-pressed={showPassword}
                                     onClick={() => setShowPassword((shown) => !shown)}
                                     edge="end"
@@ -1447,7 +1456,7 @@ export default function Home() {
                         />
                         {registerError && <Alert severity="error">{registerError}</Alert>}
                         <Button type="submit" variant="contained" size="large" disabled={loadingRegister} aria-busy={loadingRegister}>
-                          {loadingRegister ? "Регистрация..." : "Зарегистрироваться"}
+                          {loadingRegister ? tr("Регистрация...", "Бақайдгирӣ...") : tr("Зарегистрироваться", "Бақайд шудан")}
                         </Button>
                       </Stack>
                     </form>
@@ -1462,8 +1471,8 @@ export default function Home() {
               <Grid key={item.title} size={{ xs: 12, sm: 6, md: 3 }}>
                 <Card className="registry-feature-card" sx={{ height: "100%", borderRadius: 3, border: "1px solid #dfeaf7" }}>
                   <CardContent>
-                    <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>{item.title}</Typography>
-                    <Typography variant="body2" color="text.secondary">{item.text}</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>{tr(item.title, item.tg.title)}</Typography>
+                    <Typography variant="body2" color="text.secondary">{tr(item.text, item.tg.text)}</Typography>
                   </CardContent>
                 </Card>
               </Grid>
@@ -1473,11 +1482,11 @@ export default function Home() {
           <Paper className="registry-section-paper" sx={{ p: 3, mb: 3, borderRadius: 4, border: "1px solid #dfeaf7" }}>
             <Stack direction="row" sx={{ alignItems: "center", gap: 1, mb: 2 }}>
               <Visibility color="primary" />
-              <Typography variant="h5" sx={{ fontWeight: 800 }}>Новости и объявления</Typography>
+              <Typography variant="h5" sx={{ fontWeight: 800 }}>{tr("Новости и объявления", "Ахбор ва эълонҳо")}</Typography>
             </Stack>
             <Grid container spacing={2}>
               {news.length === 0 ? (
-                <Grid size={{ xs: 12 }}><Typography color="text.secondary">Новостей пока нет.</Typography></Grid>
+                <Grid size={{ xs: 12 }}><Typography color="text.secondary">{tr("Новостей пока нет.", "Ҳоло ахбор нест.")}</Typography></Grid>
               ) : news.map((item) => (
                 <Grid key={item.id} size={{ xs: 12, md: 6 }}>
                   <Card className="registry-news-card" sx={{ height: "100%", borderRadius: 3, border: "1px solid #e2e8f0" }}>
@@ -1509,7 +1518,7 @@ export default function Home() {
                         {item.content}
                       </Typography>
                       <Link href={`/news/${encodeURIComponent(item.id)}`} style={{ display: "inline-block", marginTop: 8, color: "#0c7ec3", fontWeight: 700, textDecoration: "none" }}>
-                        Читать полностью
+                        {tr("Читать полностью", "Пурра хондан")}
                       </Link>
                       <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 2 }}>{formatDate(item.published_at)}</Typography>
                     </CardContent>
@@ -1523,7 +1532,7 @@ export default function Home() {
             <Stack direction={{ xs: "column", md: "row" }} sx={{ justifyContent: "space-between", alignItems: { xs: "flex-start", md: "center" }, mb: 3, gap: 2 }}>
               <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}>
                 <Visibility color="primary" />
-                <Typography variant="h5" sx={{ fontWeight: 800 }}>Открытый реестр сертификатов</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 800 }}>{tr("Открытый реестр сертификатов", "Феҳристи кушоди сертификатҳо")}</Typography>
               </Stack>
               <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} sx={{ width: { xs: "100%", md: "auto" } }}>
                 <TextField
@@ -1532,11 +1541,11 @@ export default function Home() {
                     setSearch(event.target.value);
                     setCertificatePage(0);
                   }}
-                  placeholder="Поиск по ФИО или номеру"
+                  placeholder={tr("Поиск по ФИО или номеру", "Ҷустуҷӯ аз рӯи ному насаб ё рақам")}
                   size="small"
                   sx={{ width: { xs: "100%", sm: 300 } }}
                   slotProps={{
-                    htmlInput: { "aria-label": "Поиск по открытому реестру" },
+                    htmlInput: { "aria-label": tr("Поиск по открытому реестру", "Ҷустуҷӯ дар феҳристи кушод") },
                     input: { startAdornment: <InputAdornment position="start"><Search /></InputAdornment> },
                   }}
                 />
@@ -1547,15 +1556,15 @@ export default function Home() {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 800 }}>Рег. номер</TableCell>
-                    <TableCell sx={{ fontWeight: 800 }}>ФИО</TableCell>
-                    <TableCell sx={{ fontWeight: 800 }}>Курс</TableCell>
-                    <TableCell sx={{ fontWeight: 800 }}>Статус</TableCell>
+                    <TableCell sx={{ fontWeight: 800 }}>{tr("Рег. номер", "Рақами сабт")}</TableCell>
+                    <TableCell sx={{ fontWeight: 800 }}>{tr("ФИО", "Ному насаб")}</TableCell>
+                    <TableCell sx={{ fontWeight: 800 }}>{tr("Курс", "Курс")}</TableCell>
+                    <TableCell sx={{ fontWeight: 800 }}>{tr("Статус", "Ҳолат")}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {filteredCertificates.length === 0 ? (
-                    <TableRow><TableCell colSpan={4} align="center" sx={{ py: 5, color: "text.secondary" }}>Записей не найдено</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={4} align="center" sx={{ py: 5, color: "text.secondary" }}>{tr("Записей не найдено", "Сабт ёфт нашуд")}</TableCell></TableRow>
                   ) : filteredCertificates.map((record) => (
                     <TableRow key={record.id} hover>
                       <TableCell sx={{ fontWeight: 700 }}>{record.regNumber}</TableCell>
@@ -1565,7 +1574,7 @@ export default function Home() {
                       </TableCell>
                       <TableCell>{record.courseName}</TableCell>
                       <TableCell>
-                        <Chip label={statusLabels[record.status]} color={record.status === "published" ? "success" : record.status === "revoked" || record.status === "rejected" ? "error" : "warning"} size="small" />
+                        <Chip label={tr(statusLabels[record.status], statusLabelsTg[record.status])} color={record.status === "published" ? "success" : record.status === "revoked" || record.status === "rejected" ? "error" : "warning"} size="small" />
                         {isApplicant && record.comments && (
                           <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 0.5 }}>
                             {record.comments}
@@ -1583,7 +1592,8 @@ export default function Home() {
               page={certificatePage}
               rowsPerPage={CERTIFICATES_PER_PAGE}
               rowsPerPageOptions={[]}
-              labelDisplayedRows={({ from, to, count }) => `${from}–${to} из ${count}`}
+              labelDisplayedRows={({ from, to, count }) => `${from}–${to} ${tr("из", "аз")} ${count}`}
+              getItemAriaLabel={(type) => type === "next" ? tr("Следующая страница", "Саҳифаи оянда") : tr("Предыдущая страница", "Саҳифаи гузашта")}
               onPageChange={(_, page) => setCertificatePage(page)}
             />
           </Paper>
@@ -1843,8 +1853,8 @@ export default function Home() {
               <Grid key={item.title} size={{ xs: 12, sm: 6, md: 3 }}>
                 <Card className="registry-feature-card" sx={{ height: "100%", borderRadius: 3, border: "1px solid #dfeaf7" }}>
                   <CardContent>
-                    <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>{item.title}</Typography>
-                    <Typography variant="body2" color="text.secondary">{item.text}</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>{tr(item.title, item.tg.title)}</Typography>
+                    <Typography variant="body2" color="text.secondary">{tr(item.text, item.tg.text)}</Typography>
                   </CardContent>
                 </Card>
               </Grid>
@@ -1974,13 +1984,13 @@ export default function Home() {
         {(user.role !== "admin" || isAdminNews) && <Paper id="dashboard-news" sx={{ p: 3, mb: 3, borderRadius: 4, border: "1px solid #dfeaf7" }}>
           <Stack direction="row" sx={{ alignItems: "center", gap: 1, mb: 2 }}>
             <Visibility color="primary" />
-            <Typography variant="h5" sx={{ fontWeight: 800 }}>Новости и объявления</Typography>
+            <Typography variant="h5" sx={{ fontWeight: 800 }}>{tr("Новости и объявления", "Ахбор ва эълонҳо")}</Typography>
           </Stack>
 
           <Grid container spacing={2}>
             {news.length === 0 ? (
               <Grid size={{ xs: 12 }}>
-                <Typography color="text.secondary">Новостей пока нет.</Typography>
+                <Typography color="text.secondary">{tr("Новостей пока нет.", "Ҳоло ахбор нест.")}</Typography>
               </Grid>
             ) : news.map((item) => (
               <Grid key={item.id} size={{ xs: 12, md: 6 }}>
@@ -2093,7 +2103,7 @@ export default function Home() {
               {!isApplicant && <TextField value={search} onChange={(e) => {
                 setSearch(e.target.value);
                 setCertificatePage(0);
-              }} placeholder="Поиск по ФИО или номеру" size="small" slotProps={{ input: { startAdornment: <InputAdornment position="start"><Search /></InputAdornment> } }} />}
+              }} placeholder={tr("Поиск по ФИО или номеру", "Ҷустуҷӯ аз рӯи ному насаб ё рақам")} size="small" slotProps={{ input: { startAdornment: <InputAdornment position="start"><Search /></InputAdornment> } }} />}
               <TextField select size="small" value={statusFilter} onChange={(e) => {
                 setStatusFilter(e.target.value as "all" | Status);
                 setCertificatePage(0);
@@ -2115,10 +2125,10 @@ export default function Home() {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 800 }}>Рег. номер</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>ФИО</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>Курс</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>Статус</TableCell>
+                  <TableCell sx={{ fontWeight: 800 }}>{tr("Рег. номер", "Рақами сабт")}</TableCell>
+                  <TableCell sx={{ fontWeight: 800 }}>{tr("ФИО", "Ному насаб")}</TableCell>
+                  <TableCell sx={{ fontWeight: 800 }}>{tr("Курс", "Курс")}</TableCell>
+                  <TableCell sx={{ fontWeight: 800 }}>{tr("Статус", "Ҳолат")}</TableCell>
                   <TableCell sx={{ fontWeight: 800 }}>QR</TableCell>
                   <TableCell sx={{ fontWeight: 800 }}>Действия</TableCell>
                 </TableRow>
@@ -2135,7 +2145,7 @@ export default function Home() {
                     </TableCell>
                     <TableCell>{record.courseName}</TableCell>
                     <TableCell>
-                      <Chip label={statusLabels[record.status]} color={record.status === "published" ? "success" : record.status === "revoked" || record.status === "rejected" ? "error" : "warning"} size="small" />
+                      <Chip label={tr(statusLabels[record.status], statusLabelsTg[record.status])} color={record.status === "published" ? "success" : record.status === "revoked" || record.status === "rejected" ? "error" : "warning"} size="small" />
                     </TableCell>
                     <TableCell>
                       {record.qrUrl ? <Image unoptimized src={record.qrUrl} alt="QR" width={42} height={42} style={{ width: 42, height: 42, borderRadius: 8, border: "1px solid #dfeaf7" }} /> : <QrCode color="disabled" />}
@@ -2174,7 +2184,8 @@ export default function Home() {
             page={certificatePage}
             rowsPerPage={CERTIFICATES_PER_PAGE}
             rowsPerPageOptions={[]}
-            labelDisplayedRows={({ from, to, count }) => `${from}–${to} из ${count}`}
+            labelDisplayedRows={({ from, to, count }) => `${from}–${to} ${tr("из", "аз")} ${count}`}
+              getItemAriaLabel={(type) => type === "next" ? tr("Следующая страница", "Саҳифаи оянда") : tr("Предыдущая страница", "Саҳифаи гузашта")}
             onPageChange={(_, page) => setCertificatePage(page)}
           />
         </Paper>}
