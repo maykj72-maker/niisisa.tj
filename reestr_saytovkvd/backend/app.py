@@ -366,6 +366,33 @@ SITE_CONTENT_SECTIONS = {
 SITE_CONTENT_SECTIONS.update({f"{section}Ru" for section in SITE_CONTENT_SECTIONS})
 
 
+def notify_users(user_ids: list[str], message: str) -> None:
+    if not user_ids:
+        return
+    conn = get_db()
+    created = now_iso()
+    conn.executemany(
+        "INSERT INTO notifications (id, user_id, message, read, created_at) VALUES (?, ?, ?, 0, ?)",
+        [(uuid.uuid4().hex, uid, message, created) for uid in user_ids],
+    )
+    conn.execute(
+        "DELETE FROM notifications WHERE id IN ("
+        "SELECT id FROM notifications WHERE user_id IN ({}) ORDER BY created_at DESC LIMIT -1 OFFSET 100)".format(
+            ",".join("?" for _ in user_ids)
+        ),
+        user_ids,
+    )
+    conn.commit()
+    conn.close()
+
+
+def notify_admins(message: str) -> None:
+    conn = get_db()
+    ids = [row["id"] for row in conn.execute("SELECT id FROM users WHERE role = 'admin'").fetchall()]
+    conn.close()
+    notify_users(ids, message)
+
+
 def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -533,6 +560,20 @@ def ensure_db() -> None:
             created_at TEXT NOT NULL
         )
         """
+    )
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS notifications (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            message TEXT NOT NULL,
+            read INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL
+        )
+        """
+    )
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications (user_id, created_at DESC)"
     )
     conn.execute(
         """
@@ -1647,6 +1688,7 @@ def register(payload: RegistrationRequest, request: Request):
         raise HTTPException(status_code=409, detail="Такой код уже зарегистрирован") from error
     conn.close()
     append_audit(f"Заявитель зарегистрирован: {name} ({code})")
+    notify_admins(f"Новый заявитель зарегистрирован: {name} ({code})")
     return {"status": "registered", "role": "applicant"}
 
 
@@ -1673,6 +1715,37 @@ def logout(authorization: str | None = Header(default=None)):
 def me(authorization: str | None = Header(default=None)):
     user = get_user_from_token(authorization)
     return {"user": user}
+
+
+@app.get("/api/notifications")
+def get_notifications(authorization: str | None = Header(default=None)):
+    user = get_user_from_token(authorization)
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT id, message, read, created_at FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 30",
+        (user["id"],),
+    ).fetchall()
+    unread = conn.execute(
+        "SELECT COUNT(*) AS n FROM notifications WHERE user_id = ? AND read = 0", (user["id"],)
+    ).fetchone()["n"]
+    conn.close()
+    return {
+        "unread": unread,
+        "items": [
+            {"id": r["id"], "message": r["message"], "read": bool(r["read"]), "created_at": r["created_at"]}
+            for r in rows
+        ],
+    }
+
+
+@app.post("/api/notifications/read")
+def read_notifications(authorization: str | None = Header(default=None)):
+    user = get_user_from_token(authorization)
+    conn = get_db()
+    conn.execute("UPDATE notifications SET read = 1 WHERE user_id = ? AND read = 0", (user["id"],))
+    conn.commit()
+    conn.close()
+    return {"status": "ok"}
 
 
 @app.get("/api/certificates")
@@ -2116,6 +2189,10 @@ def create_certificate(
     conn.close()
 
     append_audit(f"Создана заявка {reg_number} пользователем {user['code']}")
+    if user["role"] == "applicant":
+        notify_admins(f"Новая заявка {reg_number} от {user['code']} ожидает проверки")
+    else:
+        notify_users([user["id"]], f"Сертификат {reg_number} создан")
 
     return {"status": "created", "registration_number": reg_number}
 
@@ -2127,7 +2204,7 @@ def approve_certificate(certificate_id: str, authorization: str | None = Header(
         raise HTTPException(status_code=403, detail="Только администратор может подтверждать сертификаты")
 
     conn = get_db()
-    row = conn.execute("SELECT registration_number FROM certificates WHERE id = ?", (certificate_id,)).fetchone()
+    row = conn.execute("SELECT registration_number, created_by FROM certificates WHERE id = ?", (certificate_id,)).fetchone()
     if row is None:
         conn.close()
         raise HTTPException(status_code=404, detail="Сертификат не найден")
@@ -2138,6 +2215,8 @@ def approve_certificate(certificate_id: str, authorization: str | None = Header(
     conn.commit()
     conn.close()
     append_audit(f"Подтверждён сертификат {row['registration_number']}")
+    if row["created_by"]:
+        notify_users([row["created_by"]], f"Ваша заявка {row['registration_number']} подтверждена и опубликована")
     return {"status": "approved"}
 
 
@@ -2224,7 +2303,7 @@ def revoke_certificate(certificate_id: str, authorization: str | None = Header(d
         raise HTTPException(status_code=403, detail="Только администратор может аннулировать сертификаты")
 
     conn = get_db()
-    row = conn.execute("SELECT registration_number FROM certificates WHERE id = ?", (certificate_id,)).fetchone()
+    row = conn.execute("SELECT registration_number, created_by FROM certificates WHERE id = ?", (certificate_id,)).fetchone()
     if row is None:
         conn.close()
         raise HTTPException(status_code=404, detail="Сертификат не найден")
@@ -2235,6 +2314,8 @@ def revoke_certificate(certificate_id: str, authorization: str | None = Header(d
     conn.commit()
     conn.close()
     append_audit(f"Аннулирован сертификат {row['registration_number']}")
+    if row["created_by"]:
+        notify_users([row["created_by"]], f"Сертификат {row['registration_number']} аннулирован")
     return {"status": "revoked"}
 
 
