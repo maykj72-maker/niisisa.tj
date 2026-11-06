@@ -1,0 +1,47 @@
+/* Admin welcome banner: keep light text on the dark photo (a later light-card rule made it unreadable). */
+.registry-dashboard .registry-admin-welcome.registry-dashboard-hero.MuiPaper-root .MuiTypography-h4 {
+  color: #fff;
+}
+
+.registry-dashboard .registry-admin-welcome.registry-dashboard-hero.MuiPaper-root .MuiTypography-overline {
+  color: #f2c45e;
+}
+
+.registry-dashboard .registry-admin-welcome.registry-dashboard-hero.MuiPaper-root .MuiTypography-body1 {
+  color: rgba(242, 246, 252, 0.88);
+}
+
+.registry-dashboard .registry-admin-welcome.registry-dashboard-hero.MuiPaper-root .MuiButton-contained {
+  color: #172a43;
+  background: linear-gradient(110deg, #f4cb69, #dfa83d);
+}
+
+@media (max-width: 700px) {
+  /* Cabinet header: name is hidden so role chip, language, theme and logout fit in 390px. */
+  .registry-dashboard-main .unified-site-header__account .MuiTypography-root {
+    display: none;
+  }
+
+  .unified-site-header__account {
+    min-width: 0;
+  }
+
+  .unified-site-header__account .MuiChip-root {
+    max-width: 112px;
+  }
+
+  .registry-dashboard-main .unified-site-header__actions {
+    max-width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .registry-dashboard-hero.MuiPaper-root {
+    min-height: 0;
+  }
+
+  .registry-dashboard-hero__date {
+    position: static;
+    align-self: flex-start;
+  }
+}
