@@ -1165,6 +1165,7 @@ async def upload_media(
         ".gif": ("image/gif", "image"),
         ".mp4": ("video/mp4", "video"),
         ".webm": ("video/webm", "video"),
+        ".pdf": ("application/pdf", "file"),
     }
     media_info = media_types.get(extension)
     if media_info is None:
@@ -1176,7 +1177,7 @@ async def upload_media(
     if content_type and content_type not in (expected_type, "application/octet-stream"):
         raise HTTPException(status_code=415, detail="Тип файла не соответствует его расширению")
 
-    max_size = 100 * 1024 * 1024 if media_kind == "video" else 5 * 1024 * 1024
+    max_size = 100 * 1024 * 1024 if media_kind == "video" else 10 * 1024 * 1024 if media_kind == "file" else 5 * 1024 * 1024
     saved_name = f"{uuid.uuid4().hex}{extension}"
     saved_path = os.path.join(MEDIA_DIR, saved_name)
     total_size = 0
@@ -1198,6 +1199,7 @@ async def upload_media(
             ".gif": lambda data: data.startswith((b"GIF87a", b"GIF89a")),
             ".mp4": lambda data: data[4:8] == b"ftyp",
             ".webm": lambda data: data.startswith(b"\x1a\x45\xdf\xa3"),
+            ".pdf": lambda data: data.startswith(b"%PDF-"),
         }
         if total_size and not signatures[extension](first_bytes):
             raise HTTPException(status_code=415, detail="Содержимое файла не соответствует его типу")
@@ -2273,14 +2275,19 @@ CMS_COLLECTIONS: dict[str, dict[str, Any]] = {
         {"key": "image", "label": "Изображение", "type": "image"},
     ]},
     "goods": {"title": "Товары", "fields": [
-        {"key": "title", "label": "Название", "type": "text", "required": True},
-        {"key": "text", "label": "Описание", "type": "textarea"},
-        {"key": "price", "label": "Цена", "type": "text"},
-        {"key": "category", "label": "Категория", "type": "text"},
-        {"key": "image", "label": "Изображение", "type": "image"},
+        {"key": "title", "label": "Название (RU)", "type": "text", "required": True},
+        {"key": "title_tj", "label": "Название (TJ)", "type": "text"},
+        {"key": "sku", "label": "Код/Артикул", "type": "text"},
+        {"key": "price", "label": "Цена (сомони)", "type": "number", "required": True},
+        {"key": "category", "label": "Категория", "type": "select", "optionsFrom": "goods-categories"},
+        {"key": "text", "label": "Описание (RU)", "type": "textarea"},
+        {"key": "text_tj", "label": "Описание (TJ)", "type": "textarea"},
+        {"key": "image", "label": "Изображение (JPG, PNG, GIF, WebP до 5 МБ)", "type": "image"},
+        {"key": "document", "label": "Документ (PDF до 10 МБ)", "type": "pdf"},
     ]},
     "goods-categories": {"title": "Категории товаров", "fields": [
-        {"key": "title", "label": "Название", "type": "text", "required": True},
+        {"key": "title", "label": "Название (RU)", "type": "text", "required": True},
+        {"key": "title_tj", "label": "Название (TJ)", "type": "text"},
     ]},
     "projects": {"title": "Проекты", "fields": [
         {"key": "title", "label": "Название", "type": "text", "required": True},
@@ -2330,6 +2337,20 @@ def _clean_cms_data(collection: dict[str, Any], data: dict[str, Any]) -> dict[st
             raise HTTPException(status_code=422, detail=f"Поле «{field['label']}» должно быть текстом")
         value = value.strip()
         limit = 20000 if field["type"] == "textarea" else 500
+        if field["type"] in ("image", "pdf") and value.startswith("http"):
+            media_path = urlsplit(value).path
+            if media_path.startswith("/media/"):
+                value = media_path
+        if field["type"] == "number" and value:
+            try:
+                number = float(value.replace(",", ".").replace(" ", ""))
+            except ValueError:
+                raise HTTPException(status_code=422, detail=f"Поле «{field['label']}» должно быть числом")
+            if number < 0 or number > 1_000_000_000:
+                raise HTTPException(status_code=422, detail=f"Поле «{field['label']}» вне допустимого диапазона")
+            value = f"{number:.2f}"
+        if field["type"] == "pdf" and value and not (value.endswith(".pdf") and (value.startswith("/media/") or value.startswith("http"))):
+            raise HTTPException(status_code=422, detail=f"Поле «{field['label']}» должно быть PDF-файлом")
         if len(value) > limit:
             raise HTTPException(status_code=422, detail=f"Поле «{field['label']}» слишком длинное")
         if field["type"] == "image" and value and not (

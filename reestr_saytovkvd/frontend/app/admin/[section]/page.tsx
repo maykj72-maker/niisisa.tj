@@ -13,7 +13,7 @@ import SiteFooter from "../../site-footer";
 import DashboardSidebar from "../../dashboard-sidebar";
 import { uploadMediaFile } from "../../media-upload";
 
-type Field = { key: string; label: string; type: "text" | "textarea" | "image"; required?: boolean };
+type Field = { key: string; label: string; type: "text" | "textarea" | "image" | "number" | "select" | "pdf"; required?: boolean; optionsFrom?: string };
 type Schema = Record<string, { title: string; fields: Field[] }>;
 type Item = { id: string; position: number; active: boolean; data: Record<string, string> };
 type Message = { id: string; name: string; contact: string; message: string; is_read: boolean; created_at: string };
@@ -124,6 +124,7 @@ function CollectionView({ name, onError }: { name: string; onError: (text: strin
   const [active, setActive] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [options, setOptions] = useState<Record<string, Item[]>>({});
 
   const load = useCallback(async () => {
     const [schemaResponse, itemsResponse] = await Promise.all([
@@ -132,7 +133,14 @@ function CollectionView({ name, onError }: { name: string; onError: (text: strin
     ]);
     if (!schemaResponse.ok || !itemsResponse.ok) return onError(await errorText(itemsResponse, "Не удалось загрузить раздел"));
     setSchema((await schemaResponse.json()) as Schema);
-    setItems((await itemsResponse.json()) as Item[]);
+    const loaded = (await itemsResponse.json()) as Item[];
+    setItems(loaded);
+    const sources = Array.from(new Set(((await schemaResponse.clone().json()) as Schema)[name]?.fields.map((field) => field.optionsFrom).filter(Boolean) as string[]));
+    const entries = await Promise.all(sources.map(async (source) => {
+      const response = await fetch(`${API_BASE}/cms/${source}`, { credentials: "include" });
+      return [source, response.ok ? ((await response.json()) as Item[]) : []] as const;
+    }));
+    setOptions(Object.fromEntries(entries));
   }, [name, onError]);
 
   useEffect(() => {
@@ -182,8 +190,21 @@ function CollectionView({ name, onError }: { name: string; onError: (text: strin
     if (!file) return;
     setUploading(true);
     try {
-      const media = await uploadMediaFile(file);
-      setData((current) => ({ ...current, [key]: media.src }));
+      let src: string;
+      if (file.name.toLowerCase().endsWith(".pdf")) {
+        if (file.size > 10 * 1024 * 1024) throw new Error("PDF не должен быть больше 10 МБ");
+        const response = await fetch(`${API_BASE}/media`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/pdf", "X-File-Name": encodeURIComponent(file.name) },
+          body: file,
+        });
+        if (!response.ok) throw new Error(await errorText(response, "Не удалось загрузить PDF"));
+        src = ((await response.json()) as { url: string }).url;
+      } else {
+        src = (await uploadMediaFile(file)).src;
+      }
+      setData((current) => ({ ...current, [key]: src }));
     } catch (error) {
       onError(error instanceof Error ? error.message : "Не удалось загрузить файл");
     } finally {
@@ -200,6 +221,7 @@ function CollectionView({ name, onError }: { name: string; onError: (text: strin
             <TableRow>
               <TableCell width={80}>Порядок</TableCell>
               <TableCell>Название</TableCell>
+              {name === "goods" && <TableCell>Цена</TableCell>}
               <TableCell>Статус</TableCell>
               <TableCell align="right">Действия</TableCell>
             </TableRow>
@@ -209,6 +231,7 @@ function CollectionView({ name, onError }: { name: string; onError: (text: strin
               <TableRow key={item.id} hover>
                 <TableCell>{item.position}</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>{item.data.title || "—"}</TableCell>
+                {name === "goods" && <TableCell>{item.data.price ? `${item.data.price} сом.` : "—"}</TableCell>}
                 <TableCell><Chip size="small" color={item.active ? "success" : "default"} label={item.active ? "Активно" : "Скрыто"} /></TableCell>
                 <TableCell align="right">
                   <Button size="small" startIcon={<EditOutlined />} onClick={() => open(item)}>Изменить</Button>
@@ -216,7 +239,7 @@ function CollectionView({ name, onError }: { name: string; onError: (text: strin
                 </TableCell>
               </TableRow>
             ))}
-            {items.length === 0 && <TableRow><TableCell colSpan={4} align="center">Записей нет</TableCell></TableRow>}
+            {items.length === 0 && <TableRow><TableCell colSpan={5} align="center">Записей нет</TableCell></TableRow>}
           </TableBody>
         </Table>
       </TableContainer>
@@ -225,7 +248,33 @@ function CollectionView({ name, onError }: { name: string; onError: (text: strin
         <DialogContent>
           <Stack spacing={2} sx={{ pt: 1 }}>
             {definition.fields.map((field) =>
-              field.type === "image" ? (
+              field.type === "pdf" ? (
+                <Stack key={field.key} spacing={1}>
+                  <Typography variant="body2" color="text.secondary">{field.label}</Typography>
+                  {data[field.key] && <Typography variant="body2" sx={{ wordBreak: "break-all" }}>{data[field.key].split("/").pop()}</Typography>}
+                  <Stack direction="row" spacing={1}>
+                    <Button component="label" variant="outlined" disabled={uploading}>
+                      {uploading ? "Загрузка..." : "Выбрать PDF"}
+                      <input hidden type="file" accept="application/pdf,.pdf" onChange={(e) => { const file = e.target.files?.[0]; if (file && !file.name.toLowerCase().endsWith(".pdf")) onError("Нужен файл PDF"); else void upload(field.key, file); e.target.value = ""; }} />
+                    </Button>
+                    {data[field.key] && <Button color="error" onClick={() => setData({ ...data, [field.key]: "" })}>Убрать</Button>}
+                  </Stack>
+                </Stack>
+              ) : field.type === "select" ? (
+                <TextField
+                  key={field.key}
+                  select
+                  label={field.label}
+                  value={data[field.key] ?? ""}
+                  onChange={(e) => setData({ ...data, [field.key]: e.target.value })}
+                  slotProps={{ select: { native: true }, inputLabel: { shrink: true } }}
+                >
+                  <option value="">Без категории</option>
+                  {(options[field.optionsFrom ?? ""] ?? []).map((option) => (
+                    <option key={option.id} value={option.id}>{option.data.title}</option>
+                  ))}
+                </TextField>
+              ) : field.type === "image" ? (
                 <Stack key={field.key} spacing={1}>
                   <Typography variant="body2" color="text.secondary">{field.label}</Typography>
                   {data[field.key] && (
@@ -245,6 +294,8 @@ function CollectionView({ name, onError }: { name: string; onError: (text: strin
                   key={field.key}
                   label={field.label}
                   required={field.required}
+                  type={field.type === "number" ? "number" : "text"}
+                  slotProps={field.type === "number" ? { htmlInput: { min: 0, step: "0.01" } } : undefined}
                   multiline={field.type === "textarea"}
                   minRows={field.type === "textarea" ? 3 : undefined}
                   value={data[field.key] ?? ""}
