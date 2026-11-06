@@ -32,3 +32,5 @@ npm run dev
 npm run lint
 npm run build
 ```
+
+Вход в систему: `NEXT_PUBLIC_API_BASE` должен указывать на домен самого фронтенда (`https://<фронтенд>/api`). Next.js проксирует `/api` и `/media` на бэкенд (`API_PROXY_TARGET`), поэтому cookie сессии остаётся first-party и не блокируется браузером.
