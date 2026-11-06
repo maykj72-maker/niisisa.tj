@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { ArrowUpRight, BookOpenText, Building2, ClipboardList, Landmark, Newspaper } from "lucide-react";
 import type { ReactNode } from "react";
 import CompanyIdentity from "./company-identity";
+import NotificationBell from "./notification-bell";
 import ThemeToggle from "./theme-toggle";
 
 const links = [
@@ -39,6 +40,7 @@ export default function SiteNavigation({ rightContent }: { rightContent?: ReactN
           ))}
         </nav>
         <div className="unified-site-header__actions">
+          <NotificationBell />
           <ThemeToggle />
           {rightContent}
         </div>

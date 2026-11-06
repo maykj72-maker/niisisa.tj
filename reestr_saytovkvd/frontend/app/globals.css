@@ -3379,3 +3379,202 @@ html[data-theme="dark"] .architecture-site .portal-news-form textarea {
   outline: 2px solid #1d7665;
   outline-offset: 2px;
 }
+
+/* ---- Notifications bell ---- */
+.notification-bell {
+  position: relative;
+}
+
+.notification-bell__button {
+  position: relative;
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(226, 235, 246, 0.2);
+  border-radius: 999px;
+  color: #ecf1f8;
+  background: rgba(255, 255, 255, 0.07);
+  cursor: pointer;
+  transition: border-color 180ms ease, background 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.notification-bell__button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(230, 179, 79, 0.68);
+  color: #f3c768;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.notification-bell__button:focus-visible {
+  outline: 2px solid #f3c768;
+  outline-offset: 2px;
+}
+
+.notification-bell__badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  color: #fff;
+  background: #e5484d;
+  box-shadow: 0 0 0 2px #12243a;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+}
+
+.notification-bell__panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 60;
+  width: min(340px, calc(100vw - 24px));
+  max-height: 420px;
+  overflow-y: auto;
+  border: 1px solid #dfe8e3;
+  border-radius: 16px;
+  color: #173c36;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(10, 30, 28, 0.28);
+  animation: bell-pop 160ms ease-out;
+}
+
+@keyframes bell-pop {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.notification-bell__title {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e8efeb;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.notification-bell__empty {
+  padding: 26px 16px;
+  color: #61736e;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.notification-bell__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.notification-bell__list li {
+  display: grid;
+  gap: 4px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eef3f0;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.notification-bell__list li:last-child {
+  border-bottom: 0;
+}
+
+.notification-bell__list li.is-unread {
+  background: #eef8f5;
+  box-shadow: inset 3px 0 0 #1d7665;
+}
+
+.notification-bell__list time {
+  color: #7a8a86;
+  font-size: 0.75rem;
+}
+
+html[data-theme="dark"] .notification-bell__panel {
+  border-color: #2e3a38;
+  color: #e6efec;
+  background: #151c1b;
+}
+
+html[data-theme="dark"] .notification-bell__title,
+html[data-theme="dark"] .notification-bell__list li {
+  border-color: #263230;
+}
+
+html[data-theme="dark"] .notification-bell__list li.is-unread {
+  background: #17302b;
+}
+
+/* ---- Visual polish layer ---- */
+html {
+  scroll-behavior: smooth;
+}
+
+.unified-site-header {
+  backdrop-filter: blur(14px);
+}
+
+.unified-site-nav__link {
+  transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.unified-site-nav__link:hover {
+  transform: translateY(-1px);
+}
+
+.registry-root .registry-hero.MuiPaper-root {
+  box-shadow: 0 28px 70px rgba(10, 40, 60, 0.22);
+}
+
+.registry-root .MuiPaper-root,
+.registry-root .MuiCard-root {
+  transition: box-shadow 220ms ease, transform 220ms ease;
+}
+
+.registry-root .MuiCard-root:hover,
+.registry-landing .registry-auth-grid ~ .MuiGrid-container .MuiPaper-root:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 44px rgba(14, 50, 44, 0.14);
+}
+
+.registry-root .MuiTableBody-root .MuiTableRow-root {
+  transition: background 150ms ease;
+}
+
+.registry-root .MuiTableBody-root .MuiTableRow-root:hover {
+  background: rgba(29, 118, 101, 0.07);
+}
+
+.registry-root .MuiChip-root {
+  letter-spacing: 0.01em;
+}
+
+.registry-root .MuiButton-contained {
+  box-shadow: 0 8px 20px rgba(29, 118, 101, 0.25);
+  transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.registry-root .MuiButton-contained:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(29, 118, 101, 0.32);
+}
+
+.registry-root .MuiButton-contained:active {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .registry-root .MuiPaper-root,
+  .registry-root .MuiCard-root,
+  .registry-root .MuiButton-contained,
+  .unified-site-nav__link,
+  .notification-bell__panel {
+    animation: none;
+    transition: none;
+    transform: none !important;
+  }
+}
