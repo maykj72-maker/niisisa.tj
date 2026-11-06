@@ -2045,7 +2045,7 @@ export default function Home() {
           </Grid>
 
           {user.role === "admin" && (
-            <Box ref={newsFormRef} component="form" onSubmit={handleSaveNews} sx={{ mt: 3, p: 2.5, borderRadius: 3, border: "1px dashed #bfd2ea", background: "#f8fbff", scrollMarginTop: 110 }}>
+            <Box className="registry-news-form" ref={newsFormRef} component="form" onSubmit={handleSaveNews} sx={{ mt: 3, p: 2.5, borderRadius: 3, border: "1px dashed #bfd2ea", background: "#f8fbff", scrollMarginTop: 110 }}>
               <Stack direction={{ xs: "column", sm: "row" }} sx={{ justifyContent: "space-between", alignItems: { xs: "flex-start", sm: "center" }, gap: 1, mb: 2 }}>
                 <Typography variant="h6" sx={{ fontWeight: 800 }}>
                   {editingNewsId ? "Редактировать новость" : "Новая новость"}
