@@ -140,12 +140,12 @@ async def add_security_headers(request: Request, call_next):
             maintenance = get_maintenance_state()
             if maintenance["enabled"]:
                 auth_header = request.headers.get("authorization")
-            if not auth_header:
-                session_token = request.cookies.get(SESSION_COOKIE_NAME)
-                auth_header = f"Bearer {session_token}" if session_token else None
-            try:
-                user = get_user_from_token(auth_header)
-            except HTTPException:
+                if not auth_header:
+                    session_token = request.cookies.get(SESSION_COOKIE_NAME)
+                    auth_header = f"Bearer {session_token}" if session_token else None
+                try:
+                    user = get_user_from_token(auth_header)
+                except HTTPException:
                     user = None
                 if user is None or user["role"] != "admin":
                     return JSONResponse(
