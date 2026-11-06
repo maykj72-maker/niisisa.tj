@@ -162,7 +162,8 @@ const AUTH_KEY = "gov_registry_auth";
 type StoredAuth = { user: User };
 
 function getVerificationUrl(record: Certificate) {
-  const apiBase = API_BASE.replace(/\/+$/, "");
+  const base = API_BASE.replace(/\/+$/, "");
+  const apiBase = base.startsWith("/") && typeof window !== "undefined" ? `${window.location.origin}${base}` : base;
   const id = encodeURIComponent(record.id);
   const number = encodeURIComponent(record.regNumber);
   return `${apiBase}/certificates/verify/${id}?number=${number}`;
