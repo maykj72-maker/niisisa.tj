@@ -276,24 +276,29 @@ select {
   color: #a1a1aa;
 }
 
-.registry-auth-card .MuiInputLabel-root {
+.registry-root .registry-auth-card .MuiInputLabel-root,
+.registry-root .registry-auth-card .MuiInputLabel-root.Mui-focused {
   color: #a1a1aa;
 }
 
-.registry-auth-card .MuiOutlinedInput-root {
+.registry-root .registry-auth-card .MuiInputLabel-root.Mui-focused {
+  color: #c4b8ff;
+}
+
+.registry-root .registry-auth-card .MuiOutlinedInput-root {
   color: #fafafa;
   background: rgba(9, 9, 11, 0.42);
 }
 
-.registry-auth-card .MuiOutlinedInput-notchedOutline {
+.registry-root .registry-auth-card .MuiOutlinedInput-notchedOutline {
   border-color: #3f3f46;
 }
 
-.registry-auth-card .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+.registry-root .registry-auth-card .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
   border-color: #71717a;
 }
 
-.registry-auth-card .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+.registry-root .registry-auth-card .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
   border-color: #8b7cf6;
 }
 
