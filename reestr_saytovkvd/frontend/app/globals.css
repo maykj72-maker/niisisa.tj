@@ -4028,11 +4028,56 @@ html[data-theme="dark"] .language-toggle button[aria-pressed="true"] {
   }
 }
 
+/* 1000-1699px: company name stays visible; the menu moves to its own row under it. */
 @media (min-width: 1000px) and (max-width: 1699px) {
-  .unified-site-header__identity .company-identity__text {
+  .unified-site-header .unified-site-header__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "brand actions"
+      "nav nav";
+    align-items: center;
+    gap: 6px 16px;
+    min-height: 0;
+    padding: 8px 0 6px;
+  }
+
+  .unified-site-header .unified-site-header__brand {
+    grid-area: brand;
+  }
+
+  .unified-site-header .unified-site-header__identity .company-identity__text {
+    display: block;
+    max-width: 560px;
+  }
+
+  .unified-site-header .unified-site-header__identity .company-identity__tajik,
+  .unified-site-header .unified-site-header__identity .company-identity__russian {
+    display: block;
+  }
+
+  .unified-site-header .unified-site-header__actions {
+    grid-area: actions;
+    width: auto;
+    margin-left: 0;
+  }
+
+  .unified-site-header .unified-site-nav {
+    grid-area: nav;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 0 0 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .unified-site-header .unified-site-nav::-webkit-scrollbar {
     display: none;
   }
+
   .unified-site-nav__link {
-    padding: 0 10px;
+    min-height: 38px;
+    padding: 0 12px;
   }
 }
