@@ -72,6 +72,7 @@ const linksByRole = {
     { href: "#document-requests", label: "Мои документы", icon: BookOpenText },
     { href: "/services", label: "Услуги", icon: FolderKanban },
     { href: "/documents", label: "Документы", icon: BookOpenText },
+    { href: "/goods", label: "Товары", icon: Boxes },
     { href: "/news", label: "Новости", icon: Newspaper },
   ],
 } satisfies Record<DashboardRole, { href: string; label: string; icon: typeof LayoutDashboard }[]>;
