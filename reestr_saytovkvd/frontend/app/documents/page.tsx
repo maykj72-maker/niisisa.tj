@@ -24,13 +24,14 @@ import SiteNavigation from "../site-navigation";
 import SiteFooter from "../site-footer";
 import DashboardSidebar from "../dashboard-sidebar";
 import { motion } from "framer-motion";
+import { useTr } from "../i18n";
 
 const categories = [
-  { id: "normative", label: "Нормативные документы" },
-  { id: "orders", label: "Приказы и распоряжения" },
-  { id: "methodical", label: "Методические материалы" },
-  { id: "forms", label: "Бланки и формы" },
-  { id: "other", label: "Другие документы" },
+  { id: "normative", label: "Нормативные документы", tg: "Ҳуҷҷатҳои меъёрӣ" },
+  { id: "orders", label: "Приказы и распоряжения", tg: "Фармонҳо ва амрҳо" },
+  { id: "methodical", label: "Методические материалы", tg: "Маводҳои методӣ" },
+  { id: "forms", label: "Бланки и формы", tg: "Бланкаҳо ва шаклҳо" },
+  { id: "other", label: "Другие документы", tg: "Ҳуҷҷатҳои дигар" },
 ];
 
 type DocumentItem = {
@@ -65,6 +66,7 @@ function formatFileSize(size: number) {
 }
 
 export default function DocumentsPage() {
+  const tr = useTr();
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
   const [auth, setAuth] = useState<AdminAuth>(null);
   const [dashboardRole, setDashboardRole] = useState<DashboardRole | null>(null);
@@ -221,12 +223,12 @@ export default function DocumentsPage() {
       <Container className="utility-page__container" maxWidth="lg" sx={{ py: 4 }}>
         <Stack spacing={2.5}>
           <Box className="utility-page__hero">
-            <Typography variant="overline">Открытая библиотека</Typography>
+            <Typography variant="overline">{tr("Открытая библиотека", "Китобхонаи кушод")}</Typography>
             <Typography variant="h3" component="h1" sx={{ fontWeight: 800, fontSize: { xs: 30, md: 40 } }}>
-              Документы и нормативы
+              {tr("Документы и нормативы", "Ҳуҷҷатҳо ва меъёрҳо")}
             </Typography>
             <Typography color="text.secondary" sx={{ mt: 1 }}>
-              Нормативные акты, приказы, методические материалы и формы для скачивания.
+              {tr("Нормативные акты, приказы, методические материалы и формы для скачивания.", "Санадҳои меъёрӣ, фармонҳо, маводҳои методӣ ва шаклҳо барои зеркашӣ.")}
             </Typography>
           </Box>
 
@@ -282,27 +284,27 @@ export default function DocumentsPage() {
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
             <TextField
               fullWidth
-              label="Поиск по документам"
+              label={tr("Поиск по документам", "Ҷустуҷӯ дар ҳуҷҷатҳо")}
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
             <TextField
               select
-              label="Категория"
+              label={tr("Категория", "Категория")}
               value={category}
               sx={{ minWidth: { sm: 270 } }}
               onChange={(event) => setCategory(event.target.value)}
             >
-              <MenuItem value="all">Все категории</MenuItem>
-              {categories.map((option) => <MenuItem key={option.id} value={option.id}>{option.label}</MenuItem>)}
+              <MenuItem value="all">{tr("Все категории", "Ҳамаи категорияҳо")}</MenuItem>
+              {categories.map((option) => <MenuItem key={option.id} value={option.id}>{tr(option.label, option.tg)}</MenuItem>)}
             </TextField>
           </Stack>
 
-          {loading && <Typography color="text.secondary">Загружаем документы...</Typography>}
+          {loading && <Typography color="text.secondary">{tr("Загружаем документы...", "Ҳуҷҷатҳо бор карда мешаванд...")}</Typography>}
           {!loading && filteredDocuments.length === 0 && (
             <Card sx={{ borderRadius: 3 }}>
               <CardContent>
-                <Typography color="text.secondary">Документы пока не добавлены или не найдены.</Typography>
+                <Typography color="text.secondary">{tr("Документы пока не добавлены или не найдены.", "Ҳуҷҷатҳо ҳоло илова нашудаанд ё ёфт нашуданд.")}</Typography>
               </CardContent>
             </Card>
           )}
@@ -322,7 +324,7 @@ export default function DocumentsPage() {
                   <Box sx={{ minWidth: 0, flex: 1 }}>
                     <Typography variant="h6" sx={{ fontWeight: 750 }}>{item.title}</Typography>
                     <Typography variant="body2" color="primary.main" sx={{ mt: 0.5 }}>
-                      {categories.find((option) => option.id === item.category)?.label ?? item.category}
+                      {(() => { const found = categories.find((option) => option.id === item.category); return found ? tr(found.label, found.tg) : item.category; })()}
                     </Typography>
                     {item.description && <Typography color="text.secondary" sx={{ mt: 1, whiteSpace: "pre-line" }}>{item.description}</Typography>}
                     <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
@@ -338,7 +340,7 @@ export default function DocumentsPage() {
                     variant="contained"
                     startIcon={<Download />}
                   >
-                    Скачать документ
+                    {tr("Скачать документ", "Зеркашии ҳуҷҷат")}
                   </Button>
                   {auth?.user.role === "admin" && (
                     <Stack direction="row">
