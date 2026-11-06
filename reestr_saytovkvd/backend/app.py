@@ -253,7 +253,7 @@ class CertificateInput(BaseModel):
     certificate_date: str | None = Field(default=None, max_length=32)
     validity_period: str | None = Field(default=None, max_length=100)
     comments: str | None = Field(default=None, max_length=2000)
-    status: str | None = Field(default=None, pattern="^(pending|published|revoked)$")
+    status: str | None = Field(default=None, pattern="^(pending|published|revoked|rejected)$")
 
     @field_validator("birth_date", "start_date", "end_date", "certificate_date")
     @classmethod
@@ -1779,7 +1779,7 @@ def get_certificates(
         )
         search_params.extend([search_pattern, search_pattern])
     if certificate_status and certificate_status != "all":
-        if certificate_status not in {"pending", "published", "revoked"}:
+        if certificate_status not in {"pending", "published", "revoked", "rejected"}:
             conn.close()
             raise HTTPException(status_code=400, detail="Некорректный статус сертификата")
         search_conditions.append("status = ?")
@@ -1806,7 +1806,7 @@ def get_certificates(
         conn.close()
         return [dict(row) for row in rows]
 
-    status_counts = {"pending": 0, "published": 0, "revoked": 0}
+    status_counts = {"pending": 0, "published": 0, "revoked": 0, "rejected": 0}
     for row in conn.execute(
         f"SELECT status, COUNT(*) AS count FROM certificates{base_where} GROUP BY status",
         base_params,
@@ -2317,6 +2317,34 @@ def revoke_certificate(certificate_id: str, authorization: str | None = Header(d
     if row["created_by"]:
         notify_users([row["created_by"]], f"Сертификат {row['registration_number']} аннулирован")
     return {"status": "revoked"}
+
+
+@app.post("/api/certificates/{certificate_id}/reject")
+def reject_certificate(certificate_id: str, authorization: str | None = Header(default=None)):
+    user = get_user_from_token(authorization)
+    if user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Только администратор может отклонять заявки")
+
+    conn = get_db()
+    row = conn.execute(
+        "SELECT registration_number, created_by, status FROM certificates WHERE id = ?", (certificate_id,)
+    ).fetchone()
+    if row is None:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Сертификат не найден")
+    if row["status"] != "pending":
+        conn.close()
+        raise HTTPException(status_code=409, detail="Отклонить можно только заявку на рассмотрении")
+    conn.execute(
+        "UPDATE certificates SET status = 'rejected', approved = 0, updated_at = ?, comments = ? WHERE id = ?",
+        (now_iso(), "Заявка отклонена администратором", certificate_id),
+    )
+    conn.commit()
+    conn.close()
+    append_audit(f"Отклонена заявка {row['registration_number']}")
+    if row["created_by"]:
+        notify_users([row["created_by"]], f"Ваша заявка {row['registration_number']} отклонена")
+    return {"status": "rejected"}
 
 
 if __name__ == "__main__":

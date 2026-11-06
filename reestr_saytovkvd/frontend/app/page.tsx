@@ -45,6 +45,7 @@ import {
   Badge,
   Business,
   CheckCircle,
+  CancelOutlined,
   DeleteOutlined,
   Download,
   EditOutlined,
@@ -70,7 +71,7 @@ import {
 import { motion } from "framer-motion";
 
 type Role = "admin" | "applicant";
-type Status = "pending" | "published" | "revoked";
+type Status = "pending" | "published" | "revoked" | "rejected";
 
 type User = {
   id: string;
@@ -246,6 +247,7 @@ const statusLabels: Record<Status, string> = {
   pending: "На утверждении",
   published: "Опубликован",
   revoked: "Аннулирован",
+  rejected: "Отклонена",
 };
 
 const companyHighlights = [
@@ -279,7 +281,7 @@ function normalizeCertificate(item: Record<string, unknown>): Certificate {
     regNumber: getString(item.registration_number, item.regNumber),
     certificateDate: getString(item.certificate_date, item.certificateDate),
     validityPeriod: getString(item.validity_period, item.validityPeriod),
-    status: status === "published" || status === "revoked" ? status : "pending",
+    status: status === "published" || status === "revoked" || status === "rejected" ? status : "pending",
     approved: item.approved === true || item.approved === 1,
     publicationDate: getString(item.publication_date, item.publicationDate) || undefined,
     qrUrl: "",
@@ -716,11 +718,11 @@ async function downloadRegistryPdf(records: Certificate[], filename: string) {
     dateLines.forEach((line, lineIndex) => rowPage.context.fillText(line, x + 12, textY + lineIndex * 30));
     x += columnWidths[4];
 
-    const statusColor = record.status === "published" ? "#168364" : record.status === "revoked" ? "#bd3e4c" : "#b7791f";
+    const statusColor = record.status === "published" ? "#168364" : record.status === "revoked" || record.status === "rejected" ? "#bd3e4c" : "#b7791f";
     const pillWidth = columnWidths[5] - 24;
     const pillHeight = Math.max(38, statusLines.length * 25 + 14);
     const pillY = rowY + (rowHeight - pillHeight) / 2;
-    rowPage.context.fillStyle = record.status === "published" ? "#e1f3eb" : record.status === "revoked" ? "#fbe8e8" : "#fff3d8";
+    rowPage.context.fillStyle = record.status === "published" ? "#e1f3eb" : record.status === "revoked" || record.status === "rejected" ? "#fbe8e8" : "#fff3d8";
     rowPage.context.fillRect(x + 10, pillY, pillWidth, pillHeight);
     rowPage.context.fillStyle = statusColor;
     rowPage.context.font = "bold 18px Arial, sans-serif";
@@ -808,6 +810,7 @@ export default function Home() {
     pending: 0,
     published: 0,
     revoked: 0,
+    rejected: 0,
   });
   const [certificatePage, setCertificatePage] = useState(0);
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -1203,6 +1206,18 @@ export default function Home() {
     }
   };
 
+  const handleReject = async (id: string) => {
+    if (!user) return;
+    if (!window.confirm("Отклонить эту заявку? Заявитель получит уведомление.")) return;
+    try {
+      await fetchJson(`${API_BASE}/certificates/${id}/reject`, { method: "POST" });
+      showNotice("Заявка отклонена");
+      await loadData();
+    } catch (error) {
+      showNotice((error as Error).message || "Не удалось отклонить заявку", "error");
+    }
+  };
+
   const handleRevoke = async (id: string) => {
     if (!user) return;
     try {
@@ -1548,7 +1563,7 @@ export default function Home() {
                       </TableCell>
                       <TableCell>{record.courseName}</TableCell>
                       <TableCell>
-                        <Chip label={statusLabels[record.status]} color={record.status === "published" ? "success" : record.status === "revoked" ? "error" : "warning"} size="small" />
+                        <Chip label={statusLabels[record.status]} color={record.status === "published" ? "success" : record.status === "revoked" || record.status === "rejected" ? "error" : "warning"} size="small" />
                         {isApplicant && record.comments && (
                           <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 0.5 }}>
                             {record.comments}
@@ -1862,7 +1877,7 @@ export default function Home() {
         {(canManage && (isApplicant || isAdminApplications)) && (
           <Grid container spacing={3} sx={{ mb: 3 }}>
           {canManage && (
-            <Grid size={{ xs: 12, lg: isApplicant ? 12 : 7 }}>
+            <Grid size={{ xs: 12 }}>
               <Paper id="application-form" ref={certificateFormRef} className="registry-section-paper" sx={{ p: 3, borderRadius: 4, border: "1px solid #dfeaf7", scrollMarginTop: 100 }}>
                 <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 3 }}>
                   <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}>
@@ -2081,6 +2096,7 @@ export default function Home() {
                 <MenuItem value="published">Опубликован</MenuItem>
                 <MenuItem value="pending">На утверждении</MenuItem>
                 <MenuItem value="revoked">Аннулирован</MenuItem>
+                <MenuItem value="rejected">Отклонена</MenuItem>
               </TextField>
               {!isApplicant && (
                 <Button onClick={exportExcel} variant="outlined" startIcon={<Download />}>Excel</Button>
@@ -2113,7 +2129,7 @@ export default function Home() {
                     </TableCell>
                     <TableCell>{record.courseName}</TableCell>
                     <TableCell>
-                      <Chip label={statusLabels[record.status]} color={record.status === "published" ? "success" : record.status === "revoked" ? "error" : "warning"} size="small" />
+                      <Chip label={statusLabels[record.status]} color={record.status === "published" ? "success" : record.status === "revoked" || record.status === "rejected" ? "error" : "warning"} size="small" />
                     </TableCell>
                     <TableCell>
                       {record.qrUrl ? <Image unoptimized src={record.qrUrl} alt="QR" width={42} height={42} style={{ width: 42, height: 42, borderRadius: 8, border: "1px solid #dfeaf7" }} /> : <QrCode color="disabled" />}
@@ -2122,7 +2138,7 @@ export default function Home() {
                       <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
                         {user.role === "admin" && record.status !== "published" && (
                           <Button size="small" variant="contained" color="success" onClick={() => handleApprove(record.id)}>
-                            {record.status === "revoked" ? "Восстановить и опубликовать" : "Опубликовать"}
+                            {record.status === "revoked" || record.status === "rejected" ? "Восстановить и опубликовать" : "Опубликовать"}
                           </Button>
                         )}
                         {user.role === "admin" && (
@@ -2131,7 +2147,10 @@ export default function Home() {
                         {user.role === "admin" && (
                           <Button size="small" variant="outlined" color="error" startIcon={<DeleteOutlined />} onClick={() => handleDeleteCertificate(record)}>Удалить</Button>
                         )}
-                        {user.role === "admin" && (
+                        {user.role === "admin" && record.status === "pending" && (
+                          <Button size="small" variant="outlined" color="warning" startIcon={<CancelOutlined />} onClick={() => handleReject(record.id)}>Отклонить</Button>
+                        )}
+                        {user.role === "admin" && record.status === "published" && (
                           <Button size="small" variant="contained" color="error" onClick={() => handleRevoke(record.id)}>Аннулировать</Button>
                         )}
                         <Button size="small" variant="outlined" startIcon={<PictureAsPdf />} aria-label={`Скачать сертификат ${record.fullName} в PDF`} onClick={() => exportCard(record)}>PDF специалиста</Button>

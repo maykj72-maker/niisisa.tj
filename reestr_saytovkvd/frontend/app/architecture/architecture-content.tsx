@@ -472,7 +472,7 @@ export default function ArchitecturePage() {
               <p className="portal-kicker">{copy("historyKicker")}</p>
               <h3>{copy("historyTitle")}</h3>
             </div>
-            <PhotoGallery autoCarousel photos={contentList<OrganizationPhoto[]>("historyPhotos")} />
+            <PhotoGallery mosaic photos={contentList<OrganizationPhoto[]>("historyPhotos")} />
           </div>
         </div>
       </section>
@@ -502,7 +502,7 @@ export default function ArchitecturePage() {
               <h3>{copy("projectsTitle")}</h3>
               <p>{copy("projectsDescription")}</p>
             </div>
-            <PhotoGallery autoCarousel photos={contentList<OrganizationPhoto[]>("projectPhotos")} />
+            <PhotoGallery mosaic photos={contentList<OrganizationPhoto[]>("projectPhotos")} />
           </div>
         </div>
       </section>
@@ -588,7 +588,7 @@ export default function ArchitecturePage() {
                 <p>{copy("standardsParagraph1")}</p>
                 <p>{copy("standardsParagraph2")}</p>
               </div>
-              <PhotoGallery autoCarousel photos={contentList<OrganizationPhoto[]>("standardsPhotos")} />
+              <PhotoGallery mosaic photos={contentList<OrganizationPhoto[]>("standardsPhotos")} />
             </article>
 
             <article className="portal-capability-card" id="training">
@@ -649,7 +649,7 @@ export default function ArchitecturePage() {
             <p className="portal-kicker">{copy("newsGalleryKicker")}</p>
             <h3>{copy("newsGalleryTitle")}</h3>
           </div>
-          <PhotoGallery autoCarousel photos={contentList<OrganizationPhoto[]>("newsPhotos")} />
+          <PhotoGallery mosaic photos={contentList<OrganizationPhoto[]>("newsPhotos")} />
         </div>
       </section>
 

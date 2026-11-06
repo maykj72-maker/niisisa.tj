@@ -3,81 +3,29 @@
 import Image from "next/image";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, X, ZoomIn } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import type { CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { OrganizationPhoto } from "./organization-data";
-
-function subscribeToReducedMotion(listener: () => void) {
-  const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-  media.addEventListener("change", listener);
-  return () => media.removeEventListener("change", listener);
-}
-
-function getReducedMotionSnapshot() {
-  return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
 
 export default function PhotoGallery({
   photos,
   className = "",
-  autoCarousel = false,
+  mosaic = false,
 }: {
   photos: OrganizationPhoto[];
   className?: string;
-  autoCarousel?: boolean;
+  mosaic?: boolean;
 }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [failedImageSrc, setFailedImageSrc] = useState<string | null>(null);
-  const [carouselIndex, setCarouselIndex] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
-  const galleryRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const activePhoto = activeIndex === null ? null : photos[activeIndex];
   const isOpen = activePhoto !== null;
-  const reducedMotion = useSyncExternalStore(subscribeToReducedMotion, getReducedMotionSnapshot, () => false);
-  const hasCarousel = autoCarousel && photos.length > 1;
-  const visibleIndex = photos.length ? carouselIndex % photos.length : 0;
-  const visiblePhoto = photos[visibleIndex];
-  const isAutoAdvancing = hasCarousel
-    && !reducedMotion
-    && isVisible
-    && !isOpen
-    && visiblePhoto?.type !== "video";
-  const showPrevious = useCallback(() => {
-    setCarouselIndex((index) => (index - 1 + photos.length) % photos.length);
-  }, [photos.length]);
-
-  const showNext = useCallback(() => {
-    setCarouselIndex((index) => (index + 1) % photos.length);
-  }, [photos.length]);
-
   const closePhoto = useCallback(() => {
     setActiveIndex(null);
     window.requestAnimationFrame(() => triggerRef.current?.focus());
   }, []);
-
-  useEffect(() => {
-    if (!hasCarousel || !galleryRef.current) return;
-    const observer = new IntersectionObserver(([entry]) => setIsVisible(entry.isIntersecting), {
-      rootMargin: "100px",
-    });
-    observer.observe(galleryRef.current);
-    return () => observer.disconnect();
-  }, [hasCarousel]);
-
-  useEffect(() => {
-    if (
-      !hasCarousel
-      || reducedMotion
-      || !isVisible
-      || isOpen
-      || visiblePhoto?.type === "video"
-    ) return;
-    const interval = window.setInterval(showNext, 5200);
-    return () => window.clearInterval(interval);
-  }, [hasCarousel, isOpen, isVisible, reducedMotion, showNext, visiblePhoto?.type]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -123,31 +71,14 @@ export default function PhotoGallery({
 
   return (
     <>
-      <div
-        className={`portal-photo-grid${hasCarousel ? " portal-photo-grid--carousel" : ""} ${className}`}
-        onKeyDown={(event) => {
-          if (!hasCarousel || event.target !== event.currentTarget) return;
-          if (event.key === "ArrowLeft") {
-            event.preventDefault();
-            showPrevious();
-          } else if (event.key === "ArrowRight") {
-            event.preventDefault();
-            showNext();
-          }
-        }}
-        ref={galleryRef}
-        style={{ "--carousel-progress-state": isAutoAdvancing ? "running" : "paused" } as CSSProperties}
-        tabIndex={hasCarousel ? 0 : undefined}
-      >
-        {(hasCarousel ? [visiblePhoto] : photos).filter((item): item is OrganizationPhoto => Boolean(item)).map((item) => {
-          const index = hasCarousel ? visibleIndex : photos.indexOf(item);
+      <div className={`portal-photo-grid${mosaic ? " portal-photo-grid--mosaic" : ""} ${className}`}>
+        {photos.map((item, index) => {
           return (
           <figure
             className={[
               "portal-photo-card",
               item.document && "portal-photo-card--document",
               item.orientation && `portal-photo-card--${item.orientation}`,
-              hasCarousel && "portal-photo-card--active",
             ].filter(Boolean).join(" ")}
             key={item.src}
           >
@@ -158,7 +89,6 @@ export default function PhotoGallery({
                 playsInline
                 preload="metadata"
                 aria-label={item.alt || item.caption}
-                onEnded={hasCarousel ? showNext : undefined}
               >
                 <source src={item.src} />
                 {item.caption}
@@ -192,23 +122,6 @@ export default function PhotoGallery({
           </figure>
           );
         })}
-        {hasCarousel && (
-          <div className="portal-photo-carousel-controls" aria-label="Идоракунии аксу наворҳо">
-            <div className="portal-photo-carousel-controls__caption" aria-live="polite">
-              <span>{visiblePhoto?.caption}</span>
-              <small>{visibleIndex + 1} / {photos.length}</small>
-            </div>
-            <div className="portal-photo-carousel-controls__progress" aria-hidden="true">
-              {photos.map((photo, index) => (
-                <span
-                  className={index === visibleIndex ? "is-active" : ""}
-                  key={photo.src}
-                  style={{ "--slide-progress-delay": `${index * 35}ms` } as CSSProperties}
-                />
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       {activePhoto && typeof document !== "undefined" && createPortal(
