@@ -3979,3 +3979,46 @@ html[data-theme="dark"] .activities-table td {
 html[data-theme="dark"] .activities-table th {
   background: rgba(255, 255, 255, 0.06);
 }
+
+.language-toggle {
+  display: inline-flex;
+  border: 1px solid rgba(19, 34, 56, 0.16);
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.7);
+}
+.language-toggle button {
+  border: 0;
+  background: transparent;
+  color: #132238;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 7px 11px;
+  cursor: pointer;
+}
+.language-toggle button[aria-pressed="true"] {
+  background: #17375f;
+  color: #fff;
+}
+html[data-theme="dark"] .language-toggle {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+}
+html[data-theme="dark"] .language-toggle button {
+  color: #e8eef7;
+}
+html[data-theme="dark"] .language-toggle button[aria-pressed="true"] {
+  background: #e0b54a;
+  color: #1b1200;
+}
+
+@media (min-width: 1000px) and (max-width: 1520px) {
+  .unified-site-header__identity .company-identity__text {
+    display: none;
+  }
+  .unified-site-nav__link {
+    padding: 0 10px;
+  }
+}

@@ -11,6 +11,7 @@ import { API_BASE } from "../api-config";
 import SiteNavigation from "../site-navigation";
 import SiteFooter from "../site-footer";
 import DashboardSidebar from "../dashboard-sidebar";
+import { useTr } from "../i18n";
 
 type Activity = { id: string; position: number; title: string; head: string; active: boolean };
 type Role = "admin" | "applicant" | null;
@@ -27,6 +28,7 @@ async function errorText(response: Response, fallback: string) {
 }
 
 export default function ActivitiesPage() {
+  const tr = useTr();
   const [items, setItems] = useState<Activity[]>([]);
   const [role, setRole] = useState<Role>(null);
   const [error, setError] = useState("");
@@ -109,12 +111,12 @@ export default function ActivitiesPage() {
         <Container className="utility-page__container" maxWidth="lg" sx={{ py: 4 }}>
           <Stack spacing={2.5}>
             <Box className="utility-page__hero">
-              <Typography variant="overline">ГУП НИИСА</Typography>
+              <Typography variant="overline">{tr("ГУП НИИСА", "КВД ПИСМ")}</Typography>
               <Typography variant="h3" component="h1" sx={{ fontWeight: 800, fontSize: { xs: 30, md: 40 } }}>
-                Наша деятельность
+                {tr("Наша деятельность", "Фаъолияти мо")}
               </Typography>
               <Typography color="text.secondary" sx={{ mt: 1 }}>
-                Отделы, лаборатории и центры института и их руководители.
+                {tr("Отделы, лаборатории и центры института и их руководители.", "Шӯъбаҳо, озмоишгоҳ ва марказҳои пажӯҳишгоҳ ва роҳбарони онҳо.")}
               </Typography>
             </Box>
             {error && <Alert severity="error" onClose={() => setError("")}>{error}</Alert>}
@@ -125,10 +127,10 @@ export default function ActivitiesPage() {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell width={80}>Порядок</TableCell>
-                    <TableCell>Название</TableCell>
-                    <TableCell>Руководитель</TableCell>
-                    <TableCell>Статус</TableCell>
+                    <TableCell width={80}>{tr("Порядок", "Тартиб")}</TableCell>
+                    <TableCell>{tr("Название", "Ном")}</TableCell>
+                    <TableCell>{tr("Руководитель", "Роҳбар")}</TableCell>
+                    <TableCell>{tr("Статус", "Ҳолат")}</TableCell>
                     {isAdmin && <TableCell align="right">Действия</TableCell>}
                   </TableRow>
                 </TableHead>
@@ -138,7 +140,7 @@ export default function ActivitiesPage() {
                       <TableCell>{item.position}</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>{item.title}</TableCell>
                       <TableCell>{item.head || "—"}</TableCell>
-                      <TableCell><Chip size="small" color={item.active ? "success" : "default"} label={item.active ? "Активно" : "Скрыто"} /></TableCell>
+                      <TableCell><Chip size="small" color={item.active ? "success" : "default"} label={item.active ? tr("Активно", "Фаъол") : tr("Скрыто", "Пинҳон")} /></TableCell>
                       {isAdmin && (
                         <TableCell align="right">
                           <Button size="small" startIcon={<EditOutlined />} onClick={() => openEditor(item)}>Изменить</Button>
@@ -147,7 +149,7 @@ export default function ActivitiesPage() {
                       )}
                     </TableRow>
                   ))}
-                  {items.length === 0 && <TableRow><TableCell colSpan={5} align="center">Записей нет</TableCell></TableRow>}
+                  {items.length === 0 && <TableRow><TableCell colSpan={5} align="center">{tr("Записей нет", "Сабтҳо нест")}</TableCell></TableRow>}
                 </TableBody>
               </Table>
             </TableContainer>

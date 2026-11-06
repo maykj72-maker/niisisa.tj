@@ -1,5 +1,6 @@
 "use client";
 
+import { useTr } from "./i18n";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -34,13 +35,13 @@ function subscribeToHash(listener: () => void) {
 
 const linksByRole = {
   admin: [
-    { href: "/?adminSection=overview", label: "Панель асосӣ", icon: LayoutDashboard },
+    { href: "/?adminSection=overview", label: "Панель управления", icon: LayoutDashboard },
     { href: "/?adminSection=applications", label: "Заявки и реестр", icon: BadgeCheck },
     { href: "/?adminSection=news", label: "Новости", icon: Newspaper },
     { href: "/documents", label: "Документы", icon: FileText },
     { href: "/services", label: "Услуги", icon: FolderKanban },
     { href: "/activities", label: "Наша деятельность", icon: UsersRound },
-    { href: "/?adminSection=site-content", label: "Идоракунии сомона", icon: Settings2 },
+    { href: "/?adminSection=site-content", label: "Управление сайтом", icon: Settings2 },
   ],
   applicant: [
     { href: "#dashboard-top", label: "Моя панель", icon: LayoutDashboard },
@@ -53,9 +54,24 @@ const linksByRole = {
   ],
 } satisfies Record<DashboardRole, { href: string; label: string; icon: typeof LayoutDashboard }[]>;
 
+const labelTg: Record<string, string> = {
+  "Заявки и реестр": "Дархостҳо ва феҳрист",
+  "Новости": "Ахбор",
+  "Документы": "Ҳуҷҷатҳо",
+  "Услуги": "Хизматрасониҳо",
+  "Наша деятельность": "Фаъолият",
+  "Панель управления": "Панели асосӣ",
+  "Управление сайтом": "Идоракунии сомона",
+  "Моя панель": "Панели ман",
+  "Мои заявки": "Дархостҳои ман",
+  "Новая заявка": "Дархости нав",
+  "Мои документы": "Ҳуҷҷатҳои ман",
+};
+
 export default function DashboardSidebar({ role }: { role: DashboardRole }) {
   const pathname = usePathname();
   const links = linksByRole[role];
+  const tr = useTr();
   const adminSection = useSyncExternalStore(
     subscribeToAdminSection,
     getAdminSectionSnapshot,
@@ -91,7 +107,7 @@ export default function DashboardSidebar({ role }: { role: DashboardRole }) {
                 onClick={() => notifyAdminSectionChange()}
               >
                 <Icon size={18} aria-hidden="true" />
-                <span>{label}</span>
+                <span>{tr(label, labelTg[label] ?? label)}</span>
               </a>
             ) : (
               <Link
@@ -101,7 +117,7 @@ export default function DashboardSidebar({ role }: { role: DashboardRole }) {
                 key={href}
               >
                 <Icon size={18} aria-hidden="true" />
-                <span>{label}</span>
+                <span>{tr(label, labelTg[label] ?? label)}</span>
               </Link>
             )
           );
