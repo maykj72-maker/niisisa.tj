@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { API_BASE } from "./api-config";
 import DocumentRequests from "./document-requests";
+import HomeCms from "./home-cms";
 import SiteNavigation from "./site-navigation";
 import SiteFooter from "./site-footer";
 import DashboardSidebar from "./dashboard-sidebar";
@@ -1340,6 +1341,7 @@ export default function Home() {
                 <Chip label={tr("Открытый доступ", "Дастрасии кушод")} color="success" variant="filled" sx={{ fontWeight: 700 }} />
               </Stack>
             </Paper>
+            <HomeCms />
           </motion.div>
 
           <Grid className="registry-auth-grid" container spacing={3} sx={{ mb: 3 }}>
