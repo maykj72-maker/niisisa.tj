@@ -2254,24 +2254,32 @@ def delete_activity(activity_id: str, authorization: str | None = Header(default
 
 CMS_COLLECTIONS: dict[str, dict[str, Any]] = {
     "slides": {"title": "Слайды", "fields": [
-        {"key": "title", "label": "Заголовок", "type": "text", "required": True},
-        {"key": "subtitle", "label": "Подзаголовок", "type": "textarea"},
+        {"key": "title", "label": "Заголовок (RU)", "type": "text", "required": True},
+        {"key": "title_tj", "label": "Заголовок (TJ)", "type": "text"},
+        {"key": "subtitle", "label": "Подзаголовок (RU)", "type": "textarea"},
+        {"key": "subtitle_tj", "label": "Подзаголовок (TJ)", "type": "textarea"},
         {"key": "image", "label": "Изображение", "type": "image"},
         {"key": "link", "label": "Ссылка", "type": "text"},
     ]},
     "home-blocks": {"title": "Блоки главной", "fields": [
-        {"key": "title", "label": "Заголовок", "type": "text", "required": True},
-        {"key": "text", "label": "Текст", "type": "textarea"},
+        {"key": "title", "label": "Заголовок (RU)", "type": "text", "required": True},
+        {"key": "title_tj", "label": "Заголовок (TJ)", "type": "text"},
+        {"key": "text", "label": "Текст (RU)", "type": "textarea"},
+        {"key": "text_tj", "label": "Текст (TJ)", "type": "textarea"},
         {"key": "image", "label": "Изображение", "type": "image"},
         {"key": "link", "label": "Ссылка", "type": "text"},
     ]},
     "advantages": {"title": "Преимущества", "fields": [
-        {"key": "title", "label": "Заголовок", "type": "text", "required": True},
-        {"key": "text", "label": "Описание", "type": "textarea"},
+        {"key": "title", "label": "Заголовок (RU)", "type": "text", "required": True},
+        {"key": "title_tj", "label": "Заголовок (TJ)", "type": "text"},
+        {"key": "text", "label": "Описание (RU)", "type": "textarea"},
+        {"key": "text_tj", "label": "Описание (TJ)", "type": "textarea"},
     ]},
     "products": {"title": "Наши продукты", "fields": [
-        {"key": "title", "label": "Название", "type": "text", "required": True},
-        {"key": "text", "label": "Описание", "type": "textarea"},
+        {"key": "title", "label": "Название (RU)", "type": "text", "required": True},
+        {"key": "title_tj", "label": "Название (TJ)", "type": "text"},
+        {"key": "text", "label": "Описание (RU)", "type": "textarea"},
+        {"key": "text_tj", "label": "Описание (TJ)", "type": "textarea"},
         {"key": "image", "label": "Изображение", "type": "image"},
     ]},
     "goods": {"title": "Товары", "fields": [
@@ -2290,14 +2298,17 @@ CMS_COLLECTIONS: dict[str, dict[str, Any]] = {
         {"key": "title_tj", "label": "Название (TJ)", "type": "text"},
     ]},
     "projects": {"title": "Проекты", "fields": [
-        {"key": "title", "label": "Название", "type": "text", "required": True},
-        {"key": "text", "label": "Описание", "type": "textarea"},
-        {"key": "category", "label": "Категория", "type": "text"},
+        {"key": "title", "label": "Название (RU)", "type": "text", "required": True},
+        {"key": "title_tj", "label": "Название (TJ)", "type": "text"},
+        {"key": "text", "label": "Описание (RU)", "type": "textarea"},
+        {"key": "text_tj", "label": "Описание (TJ)", "type": "textarea"},
+        {"key": "category", "label": "Категория", "type": "select", "optionsFrom": "project-categories"},
         {"key": "year", "label": "Год", "type": "text"},
         {"key": "image", "label": "Изображение", "type": "image"},
     ]},
     "project-categories": {"title": "Категории проектов", "fields": [
-        {"key": "title", "label": "Название", "type": "text", "required": True},
+        {"key": "title", "label": "Название (RU)", "type": "text", "required": True},
+        {"key": "title_tj", "label": "Название (TJ)", "type": "text"},
     ]},
     "pages": {"title": "Страницы", "fields": [
         {"key": "title", "label": "Заголовок", "type": "text", "required": True},
@@ -2310,7 +2321,7 @@ CMS_COLLECTIONS: dict[str, dict[str, Any]] = {
         {"key": "image", "label": "Изображение", "type": "image"},
     ]},
     "settings": {"title": "Настройки", "fields": [
-        {"key": "title", "label": "Название параметра", "type": "text", "required": True},
+        {"key": "title", "label": "Параметр: phone, email, address или working_hours", "type": "text", "required": True},
         {"key": "value", "label": "Значение", "type": "textarea"},
     ]},
 }
@@ -2396,6 +2407,24 @@ def list_cms_items(collection: str, authorization: str | None = Header(default=N
     rows = conn.execute(query + " ORDER BY position, created_at", (collection,)).fetchall()
     conn.close()
     return [_cms_row(row) for row in rows]
+
+
+SITE_SETTING_KEYS = {"phone", "email", "address", "working_hours"}
+
+
+@app.get("/api/site-settings")
+def public_site_settings():
+    """Публичные контакты из раздела «Настройки»: только разрешённые ключи."""
+    conn = get_db()
+    rows = conn.execute("SELECT * FROM cms_items WHERE collection = 'settings' AND active = 1 ORDER BY position, created_at").fetchall()
+    conn.close()
+    result: dict[str, str] = {}
+    for row in rows:
+        data = _cms_row(row)["data"]
+        key = str(data.get("title", "")).strip().lower()
+        if key in SITE_SETTING_KEYS:
+            result[key] = str(data.get("value", ""))
+    return result
 
 
 @app.post("/api/cms/{collection}")
