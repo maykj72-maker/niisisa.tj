@@ -2173,3 +2173,12 @@
     margin-top: 6px;
   }
 }
+
+/* mobile: section nav scrolls away with the page instead of floating at a hardcoded offset */
+@media (max-width: 900px) {
+  .architecture-site .portal-section-nav,
+  .portal-section-nav {
+    position: static;
+    top: auto;
+  }
+}
