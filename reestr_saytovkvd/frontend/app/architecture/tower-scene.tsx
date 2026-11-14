@@ -192,8 +192,8 @@ void main(){
   const latMat = new THREE.MeshStandardMaterial({ map: lattice, transparent: true, alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.5, metalness: 0.3 });
   const grey = new THREE.MeshStandardMaterial({ color: 0x555a60, roughness: 0.7 });
   const cranes = [];
-  function crane(x, z, h, rot) {
-    const g = new THREE.Group(); g.position.set(x, 0, z);
+  function crane(x, z, h, rot, sc = 1) {
+    const g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(sc);
     const mg = new THREE.BoxGeometry(2.4, h, 2.4);
     const u = mg.attributes.uv; for (let k = 0; k < u.count; k++) u.setY(k, u.getY(k) * h / 2.4);
     const mast = new THREE.Mesh(mg, latMat); mast.position.y = h / 2; mast.castShadow = true; g.add(mast);
@@ -211,17 +211,44 @@ void main(){
   }
   crane(34, 26, 120, 0.4); crane(-38, -22, 92, 2.4);
 
+  // ---- smaller buildings under construction around the tower
+  const tints = [0xffffff, 0xe6d3b3, 0xb7cfe0, 0xf2e6d0, 0xd0dde6];
+  const sites = [];
+  for (let i = 0; i < 9; i++) {
+    const nf = 6 + Math.floor(rnd() * 9), w = 13 + rnd() * 7, d = 13 + rnd() * 7;
+    const a = (i / 9) * Math.PI * 2 + 0.25 + (rnd() - 0.5) * 0.2, dist = 62 + (i % 3) * 13;
+    const grp = new THREE.Group(); grp.position.set(Math.cos(a) * dist, 0, Math.sin(a) * dist); grp.rotation.y = -a + (rnd() - 0.5) * 0.3;
+    const gm = new THREE.MeshStandardMaterial({ map: facade, color: tints[i % 5], metalness: 0.85, roughness: 0.16, envMapIntensity: 1.4, emissive: 0xffffff, emissiveMap: glow, emissiveIntensity: 0 });
+    gm.userData.lit = 0.2 + rnd() * 0.8; glassMats.push(gm);
+    const gf = new THREE.BoxGeometry(w, FH - 0.45, d);
+    const uv = gf.attributes.uv; for (let k = 0; k < uv.count; k++) uv.setX(k, uv.getX(k) * Math.round(w / 3));
+    const fl = [];
+    for (let f = 0; f < nf; f++) {
+      const fg = new THREE.Group(); fg.position.y = f * FH; fg.visible = false;
+      const sl = new THREE.Mesh(new THREE.BoxGeometry(w + 0.7, 0.45, d + 0.7), slabM); sl.castShadow = sl.receiveShadow = true; fg.add(sl);
+      const gl = new THREE.Mesh(gf, gm); gl.position.y = FH / 2 + 0.2; gl.castShadow = gl.receiveShadow = true; fg.add(gl);
+      grp.add(fg); fl.push(fg);
+    }
+    const rg = new THREE.Mesh(new THREE.BoxGeometry(w + 1.5, 2.6, d + 1.5), new THREE.MeshStandardMaterial({ map: lattice, transparent: true, alphaTest: 0.4, side: THREE.DoubleSide }));
+    grp.add(rg);
+    const foot = new THREE.Mesh(new THREE.BoxGeometry(w + 6, 0.5, d + 6), new THREE.MeshStandardMaterial({ map: concrete, roughness: 0.95 }));
+    foot.position.y = 0.1; foot.receiveShadow = true; grp.add(foot);
+    scene.add(grp);
+    if (i % 3 === 0) { const c = crane(grp.position.x + Math.cos(a + 0.5) * 14, grp.position.z + Math.sin(a + 0.5) * 14, nf * FH + 18, rnd() * 6, 0.45); }
+    sites.push({ fl, nf, rg, start: 0.06 + rnd() * 0.42, dur: 0.22 + rnd() * 0.12 });
+  }
+
   // ---- site props
   const cm = [0xc0392b, 0x2e6fa8, 0xe08a2a, 0x2f8f5b, 0xd9d9d9];
   for (let i = 0; i < 18; i++) {
     const b = new THREE.Mesh(new THREE.BoxGeometry(12, 2.9, 2.5), new THREE.MeshStandardMaterial({ color: cm[i % 5], roughness: 0.55, metalness: 0.3 }));
-    const a = (i / 18) * Math.PI * 2 + 0.3, d = 66 + rnd() * 90;
+    const a = (i / 18) * Math.PI * 2 + 0.3, d = 112 + rnd() * 60;
     b.position.set(Math.cos(a) * d, 1.45 + (i % 4 === 0 ? 2.9 : 0), Math.sin(a) * d); b.rotation.y = rnd() * 3; b.castShadow = b.receiveShadow = true; scene.add(b);
   }
   const sand = new THREE.MeshStandardMaterial({ color: 0xd2b87c, roughness: 1 });
   for (let i = 0; i < 6; i++) {
     const m = new THREE.Mesh(new THREE.ConeGeometry(7 + rnd() * 4, 5 + rnd() * 3, 18), sand);
-    const a = rnd() * Math.PI * 2, d = 60 + rnd() * 70; m.position.set(Math.cos(a) * d, 2.2, Math.sin(a) * d); m.castShadow = m.receiveShadow = true; scene.add(m);
+    const a = rnd() * Math.PI * 2, d = 105 + rnd() * 60; m.position.set(Math.cos(a) * d, 2.2, Math.sin(a) * d); m.castShadow = m.receiveShadow = true; scene.add(m);
   }
 
   // ---- city across the bay + mountains
@@ -312,6 +339,11 @@ void main(){
     core.visible = !done;
     const ch = Math.min(topY + FH * 2, N * FH); core.scale.y = Math.max(0.001, ch / (N * FH)); core.position.y = ch / 2;
     rig.visible = !done; rig.position.y = topY + FH + 1.5;
+    sites.forEach((b) => {
+      const n2 = cl((p - b.start) / b.dur) * b.nf; let ty = 0;
+      b.fl.forEach((fg, f) => { const k = cl(n2 - f); fg.visible = k > 0; if (k > 0) { fg.scale.y = Math.max(0.001, sm(k)); if (k < 1) ty = f * FH + FH * k; } });
+      const fin = n2 >= b.nf; b.rg.visible = !fin && n2 > 0; b.rg.position.y = (ty || b.nf * FH) + FH + 1.2;
+    });
     cranes.forEach((c, i) => { c.userData.jib.rotation.y = c.userData.r + Math.sin(time * 0.18 + i * 2) * 0.45; });
 
     const st = sm(cl((p - 0.76) / 0.22));
