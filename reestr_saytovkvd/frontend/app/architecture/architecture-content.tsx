@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import dynamic from "next/dynamic";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { API_BASE } from "../api-config";
 import {
   ArrowRight,
@@ -20,7 +19,6 @@ import {
   Ruler,
   ShieldCheck,
 } from "lucide-react";
-const TowerScene = dynamic(() => import("./tower-scene"), { ssr: false });
 import NewsFeed from "./news-feed";
 import PhotoGallery from "./photo-gallery";
 import { setSiteLanguage, useSiteLanguage } from "./site-language";
@@ -261,8 +259,6 @@ const defaultRussianContent = Object.fromEntries(
 const contactIcons: Record<string, typeof Mail> = { Phone, Mail, Landmark };
 
 export default function ArchitecturePage() {
-  const [towerReady, setTowerReady] = useState(false);
-  const onTowerReady = useCallback(() => setTowerReady(true), []);
   useEffect(() => {
     const header = document.querySelector(".unified-site-header") as HTMLElement | null;
     if (!header) return;
@@ -357,9 +353,7 @@ export default function ArchitecturePage() {
         </div>
       </nav>
 
-      <div className={`portal-hero-scroll${towerReady ? " is-3d" : ""}`}>
       <section className="portal-hero" aria-labelledby="hero-title">
-        <TowerScene onReady={onTowerReady} />
         <div className="portal-hero__grid" aria-hidden="true" />
         <div className="portal-container portal-hero__content">
           <motion.div
@@ -420,7 +414,6 @@ export default function ArchitecturePage() {
           </a>
         </div>
       </section>
-      </div>
 
       <section className="portal-quick-links" aria-label={language === "ru" ? "Основные направления" : "Самтҳои асосӣ"}>
         <div className="portal-container portal-quick-links__inner">
