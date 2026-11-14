@@ -2738,3 +2738,64 @@
     transition: none;
   }
 }
+
+/* 3D tower scroll hero */
+.portal-hero__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.portal-hero-scroll.is-3d {
+  height: 380vh;
+}
+
+.portal-hero-scroll.is-3d .portal-hero {
+  position: sticky;
+  top: var(--hero-top, 0px);
+  height: calc(100vh - var(--hero-top, 0px));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.portal-hero-scroll.is-3d .portal-hero__content {
+  flex: 1;
+  min-height: 0;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.portal-hero-scroll.is-3d .portal-hero__art,
+.portal-hero-scroll.is-3d .portal-hero__grid {
+  display: none;
+}
+
+.portal-hero-scroll.is-3d .portal-hero__copy {
+  padding: 24px 28px;
+  border-radius: 14px;
+  background: linear-gradient(100deg, rgb(4 22 28 / 62%), rgb(4 22 28 / 0%));
+  text-shadow: 0 2px 18px rgb(0 0 0 / 45%);
+}
+
+.portal-hero-scroll.is-3d .portal-hero__bottom {
+  position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-hero-scroll.is-3d { height: 220vh; }
+}
+
+.portal-hero-scroll.is-3d .portal-hero h1 {
+  font-size: clamp(32px, 3.8vw, 54px);
+}
+
+.portal-hero-scroll.is-3d .portal-hero__content {
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.portal-hero-scroll.is-3d .portal-hero__copy {
+  max-width: 600px;
+}
