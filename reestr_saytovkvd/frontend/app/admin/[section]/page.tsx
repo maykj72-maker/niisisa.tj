@@ -13,6 +13,7 @@ import SiteNavigation from "../../site-navigation";
 import SiteFooter from "../../site-footer";
 import DashboardSidebar from "../../dashboard-sidebar";
 import { uploadMediaFile } from "../../media-upload";
+import { useTr } from "../../i18n";
 
 type Field = { key: string; label: string; type: "text" | "textarea" | "image" | "number" | "select" | "pdf"; required?: boolean; optionsFrom?: string };
 type Schema = Record<string, { title: string; fields: Field[] }>;
@@ -51,6 +52,7 @@ function formatDate(value: string) {
 }
 
 function MessagesView({ onError }: { onError: (text: string) => void }) {
+  const tr = useTr();
   const [items, setItems] = useState<Message[]>([]);
   const load = useCallback(async () => {
     const response = await fetch(`${API_BASE}/messages`, { credentials: "include" });
@@ -62,28 +64,30 @@ function MessagesView({ onError }: { onError: (text: string) => void }) {
     return () => window.clearTimeout(timer);
   }, [load]);
   const markRead = async (item: Message) => {
-    await fetch(`${API_BASE}/messages/${item.id}/read`, { method: "POST", credentials: "include" });
+    const response = await fetch(`${API_BASE}/messages/${item.id}/read`, { method: "POST", credentials: "include" });
+    if (!response.ok) onError(await errorText(response, tr("Не удалось обновить сообщение", "Паёмро нав кардан имконнопазир шуд")));
     await load();
   };
   const remove = async (item: Message) => {
-    if (!window.confirm("Удалить сообщение?")) return;
-    await fetch(`${API_BASE}/messages/${item.id}`, { method: "DELETE", credentials: "include" });
+    if (!window.confirm(tr("Удалить сообщение?", "Паём нест карда шавад?"))) return;
+    const response = await fetch(`${API_BASE}/messages/${item.id}`, { method: "DELETE", credentials: "include" });
+    if (!response.ok) onError(await errorText(response, tr("Не удалось удалить", "Нест кардан имконнопазир шуд")));
     await load();
   };
   return (
     <Stack spacing={2}>
-      {items.length === 0 && <Typography color="text.secondary">Сообщений пока нет.</Typography>}
+      {items.length === 0 && <Typography color="text.secondary">{tr("Сообщений пока нет.", "Ҳоло паём нест.")}</Typography>}
       {items.map((item) => (
         <Box key={item.id} className="activities-table" sx={{ p: 2.5 }}>
           <Stack direction="row" sx={{ justifyContent: "space-between", gap: 1, flexWrap: "wrap" }}>
             <Typography sx={{ fontWeight: 700 }}>{item.name} · {item.contact}</Typography>
-            <Chip size="small" color={item.is_read ? "default" : "primary"} label={item.is_read ? "Прочитано" : "Новое"} />
+            <Chip size="small" color={item.is_read ? "default" : "primary"} label={item.is_read ? tr("Прочитано", "Хонда шуд") : tr("Новое", "Нав")} />
           </Stack>
           <Typography sx={{ mt: 1, whiteSpace: "pre-wrap" }}>{item.message}</Typography>
           <Typography variant="caption" color="text.secondary">{formatDate(item.created_at)}</Typography>
           <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-            {!item.is_read && <Button size="small" onClick={() => void markRead(item)}>Отметить прочитанным</Button>}
-            <Button size="small" color="error" startIcon={<DeleteOutlined />} onClick={() => void remove(item)}>Удалить</Button>
+            {!item.is_read && <Button size="small" onClick={() => void markRead(item)}>{tr("Отметить прочитанным", "Хондашуда қайд кардан")}</Button>}
+            <Button size="small" color="error" startIcon={<DeleteOutlined />} onClick={() => void remove(item)}>{tr("Удалить", "Нест кардан")}</Button>
           </Stack>
         </Box>
       ))}
@@ -92,6 +96,7 @@ function MessagesView({ onError }: { onError: (text: string) => void }) {
 }
 
 function LogsView({ onError }: { onError: (text: string) => void }) {
+  const tr = useTr();
   const [items, setItems] = useState<AuditRow[]>([]);
   useEffect(() => {
     const timer = window.setTimeout(async () => {
@@ -104,12 +109,12 @@ function LogsView({ onError }: { onError: (text: string) => void }) {
   return (
     <TableContainer className="activities-table">
       <Table size="small">
-        <TableHead><TableRow><TableCell width={190}>Время</TableCell><TableCell>Событие</TableCell></TableRow></TableHead>
+        <TableHead><TableRow><TableCell width={190}>{tr("Время", "Вақт")}</TableCell><TableCell>{tr("Событие", "Ҳодиса")}</TableCell></TableRow></TableHead>
         <TableBody>
           {items.map((row) => (
             <TableRow key={row.id} hover><TableCell>{formatDate(row.created_at)}</TableCell><TableCell>{row.message}</TableCell></TableRow>
           ))}
-          {items.length === 0 && <TableRow><TableCell colSpan={2} align="center">Записей нет</TableCell></TableRow>}
+          {items.length === 0 && <TableRow><TableCell colSpan={2} align="center">{tr("Записей нет", "Сабт нест")}</TableCell></TableRow>}
         </TableBody>
       </Table>
     </TableContainer>
@@ -117,6 +122,10 @@ function LogsView({ onError }: { onError: (text: string) => void }) {
 }
 
 function CollectionView({ name, onError }: { name: string; onError: (text: string) => void }) {
+  const tr = useTr();
+  const loadFailText = tr("Не удалось загрузить раздел", "Бахшро бор кардан имконнопазир шуд");
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [dialogError, setDialogError] = useState("");
   const [schema, setSchema] = useState<Schema | null>(null);
   const [items, setItems] = useState<Item[]>([]);
   const [editing, setEditing] = useState<Item | "new" | null>(null);
@@ -132,7 +141,11 @@ function CollectionView({ name, onError }: { name: string; onError: (text: strin
       fetch(`${API_BASE}/cms/schema`, { credentials: "include" }),
       fetch(`${API_BASE}/cms/${name}`, { credentials: "include" }),
     ]);
-    if (!schemaResponse.ok || !itemsResponse.ok) return onError(await errorText(itemsResponse, "Не удалось загрузить раздел"));
+    if (!schemaResponse.ok || !itemsResponse.ok) {
+      setLoadFailed(true);
+      return onError(await errorText(itemsResponse.ok ? schemaResponse : itemsResponse, loadFailText));
+    }
+    setLoadFailed(false);
     const loadedSchema = (await schemaResponse.json()) as Schema;
     setSchema(loadedSchema);
     const loaded = (await itemsResponse.json()) as Item[];
@@ -143,7 +156,7 @@ function CollectionView({ name, onError }: { name: string; onError: (text: strin
       return [source, response.ok ? ((await response.json()) as Item[]) : []] as const;
     }));
     setOptions(Object.fromEntries(entries));
-  }, [name, onError]);
+  }, [name, onError, loadFailText]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => void load(), 0);
@@ -151,10 +164,11 @@ function CollectionView({ name, onError }: { name: string; onError: (text: strin
   }, [load]);
 
   const definition = schema?.[name];
-  if (!definition) return <Typography color="text.secondary">Загрузка...</Typography>;
+  if (!definition) return <Typography color="text.secondary">{loadFailed ? tr("Данные недоступны. Войдите заново как администратор.", "Маълумот дастнорас. Аз нав ҳамчун маъмур ворид шавед.") : tr("Загрузка...", "Бор шуда истодааст...")}</Typography>;
 
   const open = (item: Item | "new") => {
     setEditing(item);
+    setDialogError("");
     setData(item === "new" ? {} : item.data);
     setPosition(item === "new" ? 0 : item.position);
     setActive(item === "new" ? true : item.active);
@@ -171,20 +185,20 @@ function CollectionView({ name, onError }: { name: string; onError: (text: strin
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ data, position: Number(position) || 0, active }),
       });
-      if (!response.ok) throw new Error(await errorText(response, "Не удалось сохранить"));
+      if (!response.ok) throw new Error(await errorText(response, tr("Не удалось сохранить", "Захира кардан имконнопазир шуд")));
       setEditing(null);
       await load();
     } catch (error) {
-      onError(error instanceof Error ? error.message : "Не удалось сохранить");
+      setDialogError(error instanceof Error ? error.message : tr("Не удалось сохранить", "Захира кардан имконнопазир шуд"));
     } finally {
       setSaving(false);
     }
   };
 
   const remove = async (item: Item) => {
-    if (!window.confirm(`Удалить «${item.data.title ?? ""}»?`)) return;
+    if (!window.confirm(tr(`Удалить «${item.data.title ?? ""}»?`, `«${item.data.title ?? ""}» нест карда шавад?`))) return;
     const response = await fetch(`${API_BASE}/cms/${name}/${item.id}`, { method: "DELETE", credentials: "include" });
-    if (!response.ok) onError(await errorText(response, "Не удалось удалить"));
+    if (!response.ok) onError(await errorText(response, tr("Не удалось удалить", "Нест кардан имконнопазир шуд")));
     await load();
   };
 
@@ -208,7 +222,7 @@ function CollectionView({ name, onError }: { name: string; onError: (text: strin
       }
       setData((current) => ({ ...current, [key]: src }));
     } catch (error) {
-      onError(error instanceof Error ? error.message : "Не удалось загрузить файл");
+      setDialogError(error instanceof Error ? error.message : tr("Не удалось загрузить файл", "Файлро бор кардан имконнопазир шуд"));
     } finally {
       setUploading(false);
     }
@@ -216,16 +230,16 @@ function CollectionView({ name, onError }: { name: string; onError: (text: strin
 
   return (
     <>
-      <Box><Button variant="contained" startIcon={<AddOutlined />} onClick={() => open("new")}>Добавить</Button></Box>
+      <Box><Button variant="contained" startIcon={<AddOutlined />} onClick={() => open("new")}>{tr("Добавить", "Илова кардан")}</Button></Box>
       <TableContainer className="activities-table">
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell width={80}>Порядок</TableCell>
-              <TableCell>Название</TableCell>
-              {name === "goods" && <TableCell>Цена</TableCell>}
-              <TableCell>Статус</TableCell>
-              <TableCell align="right">Действия</TableCell>
+              <TableCell width={80}>{tr("Порядок", "Тартиб")}</TableCell>
+              <TableCell>{tr("Название", "Ном")}</TableCell>
+              {name === "goods" && <TableCell>{tr("Цена", "Нарх")}</TableCell>}
+              <TableCell>{tr("Статус", "Ҳолат")}</TableCell>
+              <TableCell align="right">{tr("Действия", "Амалҳо")}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -233,22 +247,23 @@ function CollectionView({ name, onError }: { name: string; onError: (text: strin
               <TableRow key={item.id} hover>
                 <TableCell>{item.position}</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>{item.data.title || "—"}</TableCell>
-                {name === "goods" && <TableCell>{item.data.price ? `${item.data.price} сом.` : "—"}</TableCell>}
-                <TableCell><Chip size="small" color={item.active ? "success" : "default"} label={item.active ? "Активно" : "Скрыто"} /></TableCell>
+                {name === "goods" && <TableCell>{item.data.price ? `${item.data.price} ${tr("сом.", "сом.")}` : "—"}</TableCell>}
+                <TableCell><Chip size="small" color={item.active ? "success" : "default"} label={item.active ? tr("Активно", "Фаъол") : tr("Скрыто", "Пинҳон")} /></TableCell>
                 <TableCell align="right">
-                  <Button size="small" startIcon={<EditOutlined />} onClick={() => open(item)}>Изменить</Button>
-                  <Button size="small" color="error" startIcon={<DeleteOutlined />} onClick={() => void remove(item)}>Удалить</Button>
+                  <Button size="small" startIcon={<EditOutlined />} onClick={() => open(item)}>{tr("Изменить", "Тағйир додан")}</Button>
+                  <Button size="small" color="error" startIcon={<DeleteOutlined />} onClick={() => void remove(item)}>{tr("Удалить", "Нест кардан")}</Button>
                 </TableCell>
               </TableRow>
             ))}
-            {items.length === 0 && <TableRow><TableCell colSpan={5} align="center">Записей нет</TableCell></TableRow>}
+            {items.length === 0 && <TableRow><TableCell colSpan={5} align="center">{tr("Записей нет", "Сабт нест")}</TableCell></TableRow>}
           </TableBody>
         </Table>
       </TableContainer>
       <Dialog open={editing !== null} onClose={() => setEditing(null)} fullWidth maxWidth="sm">
-        <DialogTitle>{definition.title}: {editing === "new" ? "новая запись" : "изменить"}</DialogTitle>
+        <DialogTitle>{tr(definition.title, TITLES_TG[name] ?? definition.title)}: {editing === "new" ? tr("новая запись", "сабти нав") : tr("изменить", "тағйир додан")}</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ pt: 1 }}>
+            {dialogError && <Alert severity="error" onClose={() => setDialogError("")}>{dialogError}</Alert>}
             {definition.fields.map((field) =>
               field.type === "pdf" ? (
                 <Stack key={field.key} spacing={1}>
@@ -305,13 +320,13 @@ function CollectionView({ name, onError }: { name: string; onError: (text: strin
                 />
               ),
             )}
-            <TextField label="Порядок" type="number" value={position} onChange={(e) => setPosition(Number(e.target.value))} />
-            <FormControlLabel control={<Switch checked={active} onChange={(e) => setActive(e.target.checked)} />} label="Активно (показывать на сайте)" />
+            <TextField label={tr("Порядок", "Тартиб")} type="number" value={position} onChange={(e) => setPosition(Number(e.target.value))} />
+            <FormControlLabel control={<Switch checked={active} onChange={(e) => setActive(e.target.checked)} />} label={tr("Активно (показывать на сайте)", "Фаъол (дар сомона нишон дода шавад)")} />
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditing(null)}>Отмена</Button>
-          <Button variant="contained" disabled={saving || uploading} onClick={() => void save()}>Сохранить</Button>
+          <Button onClick={() => setEditing(null)}>{tr("Отмена", "Бекор кардан")}</Button>
+          <Button variant="contained" disabled={saving || uploading} onClick={() => void save()}>{tr("Сохранить", "Захира кардан")}</Button>
         </DialogActions>
       </Dialog>
     </>
@@ -324,12 +339,19 @@ const TITLES: Record<string, string> = {
   pages: "Страницы", about: "О предприятии", settings: "Настройки", messages: "Сообщения и обратная связь", logs: "Логи",
 };
 
+const TITLES_TG: Record<string, string> = {
+  slides: "Слайдҳо", "home-blocks": "Блокҳои саҳифаи асосӣ", advantages: "Бартариҳо", products: "Маҳсулоти мо",
+  goods: "Молҳо", "goods-categories": "Категорияҳои молҳо", projects: "Лоиҳаҳо", "project-categories": "Категорияҳои лоиҳаҳо",
+  pages: "Саҳифаҳо", about: "Дар бораи корхона", settings: "Танзимот", messages: "Паёмҳо ва алоқаи баръакс", logs: "Журнал",
+};
+
 function AdminSection() {
+  const tr = useTr();
   const section = String(useParams<{ section: string }>().section ?? "");
   const gate = useAdminGate();
   const [error, setError] = useState("");
   const onError = useCallback((text: string) => setError(text), []);
-  const title = TITLES[section];
+  const title = TITLES[section] ? tr(TITLES[section], TITLES_TG[section] ?? TITLES[section]) : undefined;
 
   return (
     <Box className="utility-page utility-page--documents utility-page--with-dashboard" sx={{ minHeight: "100vh", pb: 6 }}>
@@ -339,13 +361,17 @@ function AdminSection() {
         <Container className="utility-page__container" maxWidth="lg" sx={{ py: 4 }}>
           <Stack spacing={2.5}>
             <Box className="utility-page__hero">
-              <Typography variant="overline">Администрирование</Typography>
+              <Typography variant="overline">{tr("Администрирование", "Идоракунӣ")}</Typography>
               <Typography variant="h3" component="h1" sx={{ fontWeight: 800, fontSize: { xs: 30, md: 40 } }}>
-                {title ?? "Раздел не найден"}
+                {title ?? tr("Раздел не найден", "Бахш ёфт нашуд")}
               </Typography>
             </Box>
             {error && <Alert severity="error" onClose={() => setError("")}>{error}</Alert>}
-            {gate === "denied" && <Alert severity="warning">Раздел доступен только администратору. Войдите как администратор.</Alert>}
+            {gate === "denied" && (
+              <Alert severity="warning" action={<Button color="inherit" size="small" href="/">{tr("Войти", "Ворид шудан")}</Button>}>
+                {tr("Раздел доступен только администратору. Войдите как администратор.", "Ин бахш танҳо барои маъмур дастрас аст. Ҳамчун маъмур ворид шавед.")}
+              </Alert>
+            )}
             {gate === "admin" && title && (
               section === "messages" ? <MessagesView onError={onError} /> :
               section === "logs" ? <LogsView onError={onError} /> :

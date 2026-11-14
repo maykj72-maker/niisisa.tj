@@ -4081,3 +4081,37 @@ html[data-theme="dark"] .language-toggle button[aria-pressed="true"] {
     padding: 0 12px;
   }
 }
+
+/* admin sidebar: grouped sections */
+.registry-dashboard-sidebar__group {
+  margin: 14px 10px 4px;
+  color: #8fa6c4;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.registry-dashboard-sidebar__nav > .registry-dashboard-sidebar__group:first-child {
+  margin-top: 0;
+}
+
+@media (max-width: 900px) {
+  .registry-dashboard-sidebar__group {
+    display: none;
+  }
+}
+
+/* dashboard hero: let the title block and actions wrap instead of clipping the button */
+@media (min-width: 601px) {
+  .registry-dashboard .registry-dashboard-hero.MuiPaper-root,
+  .registry-dashboard .registry-admin-welcome.registry-dashboard-hero.MuiPaper-root {
+    flex-wrap: wrap;
+    padding-bottom: 56px;
+  }
+
+  .registry-dashboard-hero > :first-child {
+    flex: 1 1 380px;
+    min-width: 0;
+  }
+}
