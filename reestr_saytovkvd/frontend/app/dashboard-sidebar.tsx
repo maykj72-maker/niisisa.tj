@@ -24,7 +24,7 @@ import {
   Settings2,
   UsersRound,
 } from "lucide-react";
-import { useSyncExternalStore } from "react";
+import { Fragment, useSyncExternalStore } from "react";
 import { getAdminSectionSnapshot, notifyAdminSectionChange, subscribeToAdminSection, type AdminSection } from "./admin-section";
 
 type DashboardRole = "admin" | "applicant";
@@ -42,28 +42,30 @@ function subscribeToHash(listener: () => void) {
   };
 }
 
+type SidebarLink = { group?: string; href: string; label: string; icon: typeof LayoutDashboard };
+
 const linksByRole = {
   admin: [
-    { href: "/?adminSection=overview", label: "Панель управления", icon: LayoutDashboard },
-    { href: "/?adminSection=applications", label: "Заявки и реестр", icon: BadgeCheck },
-    { href: "/?adminSection=news", label: "Новости", icon: Newspaper },
-    { href: "/documents", label: "Документы", icon: FileText },
-    { href: "/services", label: "Услуги", icon: FolderKanban },
-    { href: "/activities", label: "Наша деятельность", icon: UsersRound },
-    { href: "/?adminSection=site-content", label: "Управление сайтом", icon: Settings2 },
-    { href: "/admin/slides", label: "Слайды", icon: ImageIcon },
-    { href: "/admin/home-blocks", label: "Блоки главной", icon: Layers },
-    { href: "/admin/advantages", label: "Преимущества", icon: Star },
-    { href: "/admin/products", label: "Наши продукты", icon: Package },
-    { href: "/admin/goods", label: "Товары", icon: Boxes },
-    { href: "/admin/goods-categories", label: "Категории товаров", icon: Tag },
-    { href: "/admin/projects", label: "Проекты", icon: FolderKanban },
-    { href: "/admin/project-categories", label: "Категории проектов", icon: Tag },
-    { href: "/admin/pages", label: "Страницы", icon: FileText },
-    { href: "/admin/about", label: "О предприятии", icon: Info },
-    { href: "/admin/messages", label: "Сообщения", icon: Mail },
-    { href: "/admin/logs", label: "Логи", icon: ScrollText },
-    { href: "/admin/settings", label: "Настройки", icon: Settings2 },
+    { group: "Главное", href: "/?adminSection=overview", label: "Панель управления", icon: LayoutDashboard },
+    { group: "Главное", href: "/?adminSection=applications", label: "Заявки и реестр", icon: BadgeCheck },
+    { group: "Главное", href: "/?adminSection=news", label: "Новости", icon: Newspaper },
+    { group: "Главное", href: "/admin/messages", label: "Сообщения", icon: Mail },
+    { group: "Главная страница", href: "/admin/slides", label: "Слайды", icon: ImageIcon },
+    { group: "Главная страница", href: "/admin/home-blocks", label: "Блоки главной", icon: Layers },
+    { group: "Главная страница", href: "/admin/advantages", label: "Преимущества", icon: Star },
+    { group: "Главная страница", href: "/admin/products", label: "Наши продукты", icon: Package },
+    { group: "Каталоги", href: "/admin/goods", label: "Товары", icon: Boxes },
+    { group: "Каталоги", href: "/admin/goods-categories", label: "Категории товаров", icon: Tag },
+    { group: "Каталоги", href: "/admin/projects", label: "Проекты", icon: FolderKanban },
+    { group: "Каталоги", href: "/admin/project-categories", label: "Категории проектов", icon: Tag },
+    { group: "Содержимое сайта", href: "/?adminSection=site-content", label: "Управление сайтом", icon: Settings2 },
+    { group: "Содержимое сайта", href: "/admin/pages", label: "Страницы", icon: FileText },
+    { group: "Содержимое сайта", href: "/admin/about", label: "О предприятии", icon: Info },
+    { group: "Содержимое сайта", href: "/documents", label: "Документы", icon: FileText },
+    { group: "Содержимое сайта", href: "/services", label: "Услуги", icon: FolderKanban },
+    { group: "Содержимое сайта", href: "/activities", label: "Наша деятельность", icon: UsersRound },
+    { group: "Система", href: "/admin/settings", label: "Настройки", icon: Settings2 },
+    { group: "Система", href: "/admin/logs", label: "Логи", icon: ScrollText },
   ],
   applicant: [
     { href: "#dashboard-top", label: "Моя панель", icon: LayoutDashboard },
@@ -75,7 +77,15 @@ const linksByRole = {
     { href: "/goods", label: "Товары", icon: Boxes },
     { href: "/news", label: "Новости", icon: Newspaper },
   ],
-} satisfies Record<DashboardRole, { href: string; label: string; icon: typeof LayoutDashboard }[]>;
+} satisfies Record<DashboardRole, SidebarLink[]>;
+
+const groupTg: Record<string, string> = {
+  "Главное": "Асосӣ",
+  "Главная страница": "Саҳифаи асосӣ",
+  "Каталоги": "Феҳристҳо",
+  "Содержимое сайта": "Мундариҷаи сомона",
+  "Система": "Система",
+};
 
 const labelTg: Record<string, string> = {
   "Заявки и реестр": "Дархостҳо ва феҳрист",
@@ -106,7 +116,7 @@ const labelTg: Record<string, string> = {
 
 export default function DashboardSidebar({ role }: { role: DashboardRole }) {
   const pathname = usePathname();
-  const links = linksByRole[role];
+  const links: SidebarLink[] = linksByRole[role];
   const tr = useTr();
   const adminSection = useSyncExternalStore(
     subscribeToAdminSection,
@@ -121,7 +131,8 @@ export default function DashboardSidebar({ role }: { role: DashboardRole }) {
         <Image src="/company-logo.jpg" alt="" width={66} height={66} priority />
       </Link>
       <nav className="registry-dashboard-sidebar__nav">
-        {links.map(({ href, label, icon: Icon }) => {
+        {links.map(({ group, href, label, icon: Icon }, index) => {
+          const showGroup = Boolean(group) && group !== links[index - 1]?.group;
           const section = href.startsWith("/?adminSection=")
             ? href.split("=").at(-1) as AdminSection
             : null;
@@ -133,13 +144,18 @@ export default function DashboardSidebar({ role }: { role: DashboardRole }) {
               : pathname === targetPath
                 && (!targetAnchor || hash === `#${targetAnchor}`);
 
+          const groupHeading = showGroup && group ? (
+            <p className="registry-dashboard-sidebar__group" key={`group-${group}`}>{tr(group, groupTg[group] ?? group)}</p>
+          ) : null;
+
           return (
-            section ? (
+            <Fragment key={href}>
+            {groupHeading}
+            {section ? (
               <a
                 aria-current={isActive ? "page" : undefined}
                 className={`registry-dashboard-sidebar__link${isActive ? " is-active" : ""}`}
                 href={href}
-                key={href}
                 onClick={() => notifyAdminSectionChange()}
               >
                 <Icon size={18} aria-hidden="true" />
@@ -150,12 +166,12 @@ export default function DashboardSidebar({ role }: { role: DashboardRole }) {
                 aria-current={isActive ? "page" : undefined}
                 className={`registry-dashboard-sidebar__link${isActive ? " is-active" : ""}`}
                 href={href}
-                key={href}
               >
                 <Icon size={18} aria-hidden="true" />
                 <span>{tr(label, labelTg[label] ?? label)}</span>
               </Link>
-            )
+            )}
+            </Fragment>
           );
         })}
       </nav>
