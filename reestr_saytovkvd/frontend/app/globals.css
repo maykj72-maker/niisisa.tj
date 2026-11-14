@@ -4101,3 +4101,17 @@ html[data-theme="dark"] .language-toggle button[aria-pressed="true"] {
     display: none;
   }
 }
+
+/* dashboard hero: let the title block and actions wrap instead of clipping the button */
+@media (min-width: 601px) {
+  .registry-dashboard .registry-dashboard-hero.MuiPaper-root,
+  .registry-dashboard .registry-admin-welcome.registry-dashboard-hero.MuiPaper-root {
+    flex-wrap: wrap;
+    padding-bottom: 56px;
+  }
+
+  .registry-dashboard-hero > :first-child {
+    flex: 1 1 380px;
+    min-width: 0;
+  }
+}

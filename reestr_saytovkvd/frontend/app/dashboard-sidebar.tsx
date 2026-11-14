@@ -126,8 +126,8 @@ export default function DashboardSidebar({ role }: { role: DashboardRole }) {
   const hash = useSyncExternalStore(subscribeToHash, getHashSnapshot, () => "");
 
   return (
-    <aside className="registry-dashboard-sidebar" aria-label="Навигация личного кабинета">
-      <Link className="registry-dashboard-sidebar__brand" href="/" aria-label="К феҳристи сертификатҳо">
+    <aside className="registry-dashboard-sidebar" aria-label={tr("Навигация личного кабинета", "Навигатсияи кабинети шахсӣ")}>
+      <Link className="registry-dashboard-sidebar__brand" href="/" aria-label={tr("К реестру сертификатов", "Ба феҳристи сертификатҳо")}>
         <Image src="/company-logo.jpg" alt="" width={66} height={66} priority />
       </Link>
       <nav className="registry-dashboard-sidebar__nav">
@@ -177,7 +177,7 @@ export default function DashboardSidebar({ role }: { role: DashboardRole }) {
       </nav>
       <Link className="registry-dashboard-sidebar__public-link" href="/architecture">
         <ArrowUpRight size={16} aria-hidden="true" />
-        <span>Публичный сайт</span>
+        <span>{tr("Публичный сайт", "Сомонаи оммавӣ")}</span>
       </Link>
     </aside>
   );
